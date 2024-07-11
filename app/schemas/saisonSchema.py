@@ -7,5 +7,9 @@ class SaisonBase(BaseModel):
     nb_episodes: int 
     serie_id: str
 
-class SaisonCreate(BaseModel):
+class SaisonCreate(SaisonBase):
     pass
+
+class SaisonUpdate(BaseModel):
+    titre: Optional[str] = None
+    nb_episodes: Optional[int] = None

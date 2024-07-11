@@ -1,6 +1,7 @@
 from sqlalchemy import Column,String,Integer,Boolean, ForeignKey
 from database import Base
 from sqlalchemy.orm import relationship
+from app.models.parent_video import parent_video
 
 class Parent(Base):
     __tablename__ = 'parents'
@@ -10,14 +11,21 @@ class Parent(Base):
     age = Column(Integer)
     motDePasse = Column(String)
     pays = Column(String)
-    contact = Column(String)
-    email = Column(String)
+    contact = Column(String,unique=True)
+    email = Column(String,unique=True)
     codeParental = Column(String)
     nbre_profil = Column(Integer)
     historique_video = Column(String)
+    maxProfilEnfant=Column(Integer, default=3)
 
-    admin_id=Column(String, ForeignKey("admins.id"))
+    
     # #Relation de plusieurs a un avec enfant
     enfants= relationship("Enfant", back_populates="parent")
-    # #Relation de plusieurs a un avec admin
-    admin= relationship("Admin", back_populates="parents")
+    
+    videos = relationship(
+        "Video",
+        secondary=parent_video,
+        back_populates="parents"
+    )
+    
+    

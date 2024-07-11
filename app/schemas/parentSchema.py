@@ -7,10 +7,8 @@ class ParentBase(BaseModel):
     pays: str
     contact: str = None
     email: EmailStr
-    nbre_profil: str
     codeParental: str
-    historique_video: Optional[str] = None
-    admin_id:str
+    
 
 class ParentCreate(ParentBase):
     motDePasse: str

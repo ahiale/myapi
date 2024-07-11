@@ -11,10 +11,11 @@ class Categorie(Base):
     __tablename__ = 'categories'
     id = Column(String, primary_key=True)
     titre = Column(String)
-    desc = Column(String)
     
-    categories = relationship(
-        "Video",
-        secondary="categorie_video",
-        back_populates="categories"
+    
+    
+    videos = relationship(
+        'Video',
+        secondary=categorie_video,
+        back_populates='categories'
     )

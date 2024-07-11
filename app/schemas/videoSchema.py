@@ -11,6 +11,7 @@ class VideoBase(BaseModel):
     description: str 
     duree: str 
     type_video: TypeVideoEnum 
+    url: HttpUrl
     admin_id:str
     saison_id:str
 
@@ -18,10 +19,7 @@ class VideoBase(BaseModel):
         use_enum_values = True
 
 class VideoCreate(VideoBase):
-    
-    url: HttpUrl
-    admin_id:str
-    saison_id:str
+    pass
     
 class VideoUpdate(BaseModel):
     titre: Optional[str] = None

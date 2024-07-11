@@ -1,11 +1,7 @@
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, ARRAY
-from database import Base
+from sqlalchemy import Column, String, Integer, ARRAY, ForeignKey
 from sqlalchemy.orm import relationship
-# from app.models.video import Video
-from app.models.enfant_video import enfant_video  # Forward reference
-
- 
-
+from database import Base
+from app.models.enfant_video import enfant_video  # Import de la table de liaison
 
 class Enfant(Base):
     __tablename__ = 'enfants'
@@ -14,9 +10,6 @@ class Enfant(Base):
     pseudo = Column(String)
     image_profil = Column(String)
     age = Column(Integer)
-    allocation = Column(String)
-    joursA = Column(ARRAY(String))
-    heuresA = Column(ARRAY(String))
     code_pin = Column(String)
     historique_video = Column(ARRAY(String))
     parent_id= Column(String, ForeignKey("parents.id"))
@@ -28,13 +21,12 @@ class Enfant(Base):
         secondary=enfant_video,
         back_populates="enfants"
     )
+    
+    #Relation de plusieurs a un avec TempsEcran
+    tempsEcrans= relationship("TempsEcran", back_populates="enfant")
+    
 
-    # # # Many-to-many relationship with Video
-    # videos = relationship(
-    #      "Video",
-    #      secondary=enfant_video,
-    #      back_populates="enfants"
-    #  )
+   
     
     
     

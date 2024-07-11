@@ -1,0 +1,104 @@
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status,Depends
+from app.models.parent import Parent
+from app.schemas.parentSchema import ParentCreate, ParentUpdate
+from database import get_db
+from app.crud.utils import generate_id
+import logging
+import bcrypt
+
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password.decode('utf-8')
+
+
+def retriveParent(parent_id: str, db:Session=Depends(get_db)):
+    return db.query(Parent).filter(Parent.id == parent_id).first()
+    
+def get_parent(parent_id: str, db:Session=Depends(get_db)):
+    parent = db.query(Parent).filter(Parent.id == parent_id).first()
+    if not parent:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="cet parent n'a pas ete trouve")
+    return parent
+
+def create_parent(parent: ParentCreate, db:Session=Depends(get_db)):
+    
+    rand_id= generate_id()
+    while retriveParent(rand_id, db):
+        rand_id=generate_id()
+    
+    hashed_password = hash_password(parent.motDePasse)
+    
+    db_parent = Parent(
+        id=rand_id,
+        nom= parent.nom,
+        motDePasse=hashed_password,
+        pays=parent.pays,
+        email=parent.email,
+        codeParental=parent.codeParental,
+        age=parent.age,
+        
+    )
+    
+    try:
+        db.add(db_parent)
+        db.commit()
+        db.refresh(db_parent)
+        return db_parent    
+    except Exception as e:
+        logging.error(f"Error fetching parents: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="International server error")
+    
+    
+
+    
+
+def update_parent(parent_id: str, parent_update: ParentUpdate, db:Session=Depends(get_db)):
+    
+    parent = db.query(Parent).filter(Parent.id == parent_id).first()
+    
+    if not parent:
+        raise HTTPException(status_code=404, detail=f"User with ID {parent_id} not found")
+    
+    
+    parent.nom=parent_update.nom if parent_update.nom else parent.nom
+    parent.age=parent_update.age if parent_update.age else parent.age
+    parent.motDePasse=parent_update.motDePasse if parent_update.motDePasse else parent.motDePasse
+    parent.codeParental=parent_update.codeParental if parent_update.codeParental else parent.codeParental
+    parent.email=parent_update.email if parent_update.email else parent.email
+    parent.contact=parent_update.contact if parent_update.contact else parent.contact
+    parent.pays=parent_update.pays if parent_update.pays else parent.pays
+    
+    db.commit()
+    db.refresh(parent)
+    return parent
+
+def delete_parent( Parent_id: str, db:Session=Depends(get_db)):
+    parent = get_parent(Parent_id,db)
+    if not parent:
+        raise HTTPException(status_code=404, detail=f"User with ID {Parent_id} not found")
+    db.delete(parent)
+    db.commit()
+    return True
+    
+
+# def get_all_parents(db:Session = Depends(get_db)):
+#     return db.query(parent).all()
+     
+#     # return "parents"
+    
+    
+    
+
+def get_all_parents(db: Session = Depends(get_db)):
+    try:
+        logging.info("Fetching all parents from the database")
+        parents = db.query(Parent).all()
+        logging.info(f"Fetched {len(parents)} parents")
+        return parents
+    except Exception as e:
+        logging.error(f"Error fetching parents: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+

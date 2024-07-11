@@ -8,6 +8,9 @@ from app.crud.utils import generate_id
 import logging
 
 
+def retriveEnfant(enfant_id: str, db:Session=Depends(get_db)):
+    return db.query(Enfant).filter(Enfant.id == enfant_id).first()
+
 def get_enfant(enfant_id: str, db:Session=Depends(get_db)):
     enfant = db.query(Enfant).filter(Enfant.id == enfant_id).first()
     if not enfant:
@@ -18,10 +21,13 @@ def create_enfant(enfant: EnfantCreate, db:Session=Depends(get_db)):
          # Vérifie que le parent existe
     parent = db.query(Parent).filter(Parent.id == enfant.parent_id).first()
     if not parent:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="cet parent nest qssocie a aucun enfant")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="cet parent nest associe a aucun enfant")
     
+    if len(parent.enfants)>= parent.maxProfilEnfant:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vous ne pouvez creer que 3 profils")
+        
     rand_id= generate_id()
-    while get_enfant(rand_id, db):
+    while retriveEnfant(rand_id, db):
         rand_id=generate_id()
     
     db_enfant = Enfant(
@@ -29,12 +35,9 @@ def create_enfant(enfant: EnfantCreate, db:Session=Depends(get_db)):
         pseudo= enfant.pseudo,
         age=enfant.age,
         image_profil=enfant.image_profil,
-        allocation=enfant.allocation,
-        joursA=enfant.joursA,
-        heuresA=enfant.heuresA,
         code_pin=enfant.code_pin,
-        historique_video=enfant.historique_video,
         parent_id=enfant.parent_id
+        
         
     )
     
@@ -59,11 +62,8 @@ def update_enfant(enfant_id: str, enfant_update: EnfantUpdate, db:Session=Depend
     
     enfant.age=enfant_update.age if enfant_update.age else enfant.age
     enfant.pseudo=enfant_update.pseudo if enfant_update.pseudo else enfant.pseudo
-    enfant.joursA=enfant_update.joursA if enfant_update.joursA else enfant.joursA
     enfant.image_profil=enfant_update.image_profil if enfant_update.image_profil else enfant.image_profil
     enfant.code_pin=enfant_update.code_pin if enfant_update.code_pin else enfant.code_pin
-    enfant.historique_video=enfant_update.historique_video if enfant_update.historique_video else enfant.historique_video
-    enfant.age=enfant_update.age if enfant_update.age else enfant.age
     
     db.commit()
     db.refresh(enfant)
@@ -75,6 +75,7 @@ def delete_enfant( enfant_id: str, db:Session=Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"User with ID {enfant_id} not found")
     db.delete(enfant)
     db.commit()
+    return True
     
 
 # def get_all_enfants(db:Session = Depends(get_db)):

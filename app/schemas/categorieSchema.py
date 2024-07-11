@@ -5,7 +5,7 @@ class CategorieBase(BaseModel):
     id: str
     titre: str
 
-class CategorieCreate(BaseModel):
+class CategorieCreate(CategorieBase):
     titre: str
 
 class CategorieUpdate(BaseModel):
