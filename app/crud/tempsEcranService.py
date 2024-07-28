@@ -17,6 +17,17 @@ def get_tempsEcran(tempsEcran_id: str, db:Session=Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="cet tempsEcran na pas ete trouve")
     return tempsEcran
 
+def get_enfant_id_by_temps_ecran_id(tempsEcran_id: str, db: Session = Depends(get_db)):
+    db_tempsEcran = db.query(TempsEcran).filter(TempsEcran.id == tempsEcran_id).first()
+    if not db_tempsEcran:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Temps d'écran non trouvé")
+    
+    enfant_id = db_tempsEcran.enfant_id
+    if not enfant_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Enfant non trouvé pour ce temps d'écran")
+    
+    return  enfant_id
+
 def create_tempsEcran(tempsEcran: TempsEcranCreate, db:Session=Depends(get_db)):
          # Vérifie que le enfant existe
     enfant = db.query(Enfant).filter(Enfant.id == tempsEcran.enfant_id).first()

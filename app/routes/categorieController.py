@@ -9,7 +9,7 @@ from app.schemas.categorieSchema import CategorieBase, CategorieCreate, Categori
 
 router=APIRouter()
 
-@router.get("/")
+@router.get("/allCategories")
 def readP(db: Session=Depends(get_db)):
     categories=get_all_categories(db)
     if not categories:

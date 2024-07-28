@@ -2,11 +2,13 @@ from pydantic import BaseModel,EmailStr
 from typing import List, Optional
 
 class CategorieBase(BaseModel):
-    id: str
     titre: str
+    
+    class config:
+        orm_mode=True
 
 class CategorieCreate(CategorieBase):
-    titre: str
+    pass
 
 class CategorieUpdate(BaseModel):
     titre: Optional[str] = None

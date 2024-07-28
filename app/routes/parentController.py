@@ -7,11 +7,15 @@ from database import get_db
 from app.crud.parentService import get_all_parents, get_parent, create_parent, update_parent, delete_parent
 from app.crud.utils import generate_id
 from app.schemas.parentSchema import ParentCreate,ParentUpdate
-
+from app.crud.utils import create_access_token
+from app.crud.parentService import login
+from app.schemas.parentSchema import LoginSchema
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 router=APIRouter()
 
-@router.get("/")
+@router.get("/red_all_parents")
 def readP(db: Session=Depends(get_db)):
     parents=get_all_parents(db)
     if not parents:
@@ -19,7 +23,7 @@ def readP(db: Session=Depends(get_db)):
     return parents
 
 # GET /parent/{parent_id}
-@router.get("/{parent_id}")
+@router.get("/get/{parent_id}")
 def read_parent_controller(parent_id: str, db: Session = Depends(get_db)):
     try:
         parent = get_parent(parent_id, db)
@@ -31,7 +35,7 @@ def read_parent_controller(parent_id: str, db: Session = Depends(get_db)):
     
 
 # POST /parent/
-@router.post("/")
+@router.post("/create")
 def create_parent_controller(parent: ParentCreate, db: Session = Depends(get_db)):
     try:
         parent = create_parent(parent, db)
@@ -68,3 +72,10 @@ def delete_parent_controller(parent_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+@router.post("/login")
+def get_token(data: LoginSchema, db: Session = Depends(get_db)):
+    token = login(data, db)
+    return token
+
+
+

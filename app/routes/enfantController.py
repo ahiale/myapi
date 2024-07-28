@@ -4,14 +4,14 @@ from app.models.enfant import Enfant
 from app.models.parent import Parent
 # from schemas.enfantSchema import EnfantCreate, EnfantUpdate 
 from database import get_db
-from app.crud.enfantService import get_enfant, get_all_enfants, create_enfant, update_enfant, delete_enfant
+from app.crud.enfantService import get_enfant, get_all_enfants, create_enfant, update_enfant, delete_enfant, get_tempsEcran_by_enfant_id
 from app.crud.utils import generate_id
 from app.schemas.enfantSchema import EnfantCreate,EnfantUpdate
 
 
 router=APIRouter()
 
-@router.get("/")
+@router.get("/read_all_enfants")
 def readU(db: Session=Depends(get_db)):
     enfants=get_all_enfants(db)
     if not enfants:
@@ -31,7 +31,7 @@ def read_enfant_controller(enfant_id: str, db: Session = Depends(get_db)):
     
 
 # POST /enfant/
-@router.post("/")
+@router.post("/createEnfant")
 def create_enfant_controller(enfant: EnfantCreate, db: Session = Depends(get_db)):
     try:
         enfant = create_enfant(enfant, db)
@@ -54,7 +54,7 @@ def update_enfant_controller(enfant_id: str, enfant: EnfantUpdate, db: Session =
 
 
 #DELETE /enfant/{enfant_id}
-@router.delete("/{enfant_id}")
+@router.delete("/delete/{enfant_id}")
 def delete_enfant_controller(enfant_id: str, db: Session = Depends(get_db)):
     try:
         enfant = get_enfant(enfant_id, db)
@@ -67,3 +67,6 @@ def delete_enfant_controller(enfant_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+@router.get("/{enfant_id}/temps_ecran")
+def get_tempsEcran(enfant_id: str, db: Session = Depends(get_db)):
+    return get_tempsEcran_by_enfant_id(enfant_id, db)

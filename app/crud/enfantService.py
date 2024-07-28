@@ -2,7 +2,9 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
 from app.models.enfant import Enfant
 from app.models.parent import Parent
+from app.models import tempsEcran
 from app.schemas.enfantSchema import EnfantCreate, EnfantUpdate, EnfantBase 
+from app.schemas.tempsEcranSchema import TempsEcranBase
 from database import get_db
 from app.crud.utils import generate_id
 import logging
@@ -49,6 +51,17 @@ def create_enfant(enfant: EnfantCreate, db:Session=Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail="International server error")
     
+def get_tempsEcran_by_enfant_id(enfant_id: str, db: Session = Depends(get_db)) -> TempsEcranBase:
+    db_enfant = db.query(Enfant).filter(Enfant.id == enfant_id).first()
+    if not db_enfant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Enfant non trouvé")
+    
+    db_tempsEcran = db_enfant.tempsEcrans
+    # db_tempsEcran = db.query(TempsEcran).filter(TempsEcran.enfant_id == enfant_id).first()
+    if not db_tempsEcran:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Temps d'écran non trouvé pour cet enfant")
+    
+    return db_tempsEcran
 
     
 

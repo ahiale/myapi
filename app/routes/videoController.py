@@ -1,17 +1,24 @@
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status,Depends,APIRouter
+from fastapi import HTTPException, status,Depends,APIRouter,Query, UploadFile, File
 from app.models.video import Video
 from app.models.parent import Parent
+from typing import List
 # from schemas.videoSchema import VideoCreate, VideoUpdate 
 from database import get_db
-from app.crud.videoService import get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique
+from app.crud.videoService import get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file
 from app.crud.utils import generate_id
-from app.schemas.videoSchema import VideoCreate,VideoUpdate
+from app.schemas.videoSchema import VideoCreate,VideoUpdate, SearchCriteria, VideoBase
+from app.models import categorie
+from fastapi.responses import FileResponse
+# from fastapi.responses import JSONResponse
+# from app.models.categorie_video import CategorieVideo
 
+video_folder = "media/videos/"
 
 router=APIRouter()
 
-@router.get("/")
+@router.get("/allVideo")
 def readU(db: Session=Depends(get_db)):
     videos=get_all_videos(db)
     if not videos:
@@ -38,7 +45,6 @@ def create_video_controller(video: VideoCreate, db: Session = Depends(get_db)):
         return video,status.HTTP_201_CREATED
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 #PUT /video/{video_id}
@@ -96,4 +102,24 @@ def lire_historique_endpoint( enfant_id: str, db: Session = Depends(get_db)):
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Caleb est un 10 ")
+        raise HTTPException(status_code=500, detail="lecture impossible ")
+    
+@router.get("/search/")
+def search_videos(criteria: SearchCriteria = Depends(), db: Session = Depends(get_db)):
+    videos = db.query(Video).filter(
+        Video.titre.like("%"+ criteria.query+ "%") | Video.description.like("%"+ criteria.query+ "%")
+        )
+    return videos.all()
+
+@router.post("/upload/")
+async def upload(file: UploadFile = File(...)):
+    response = await upload_file(file)
+    return JSONResponse(content=response)
+
+
+@router.get("/media/video/{video_name}")
+async def readVideo(video_name: str):
+    path = f"{video_folder}{video_name}"
+    return FileResponse(path)
+    
+        

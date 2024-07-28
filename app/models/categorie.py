@@ -17,5 +17,8 @@ class Categorie(Base):
     videos = relationship(
         'Video',
         secondary=categorie_video,
-        back_populates='categories'
+        back_populates='categories',
+        lazy='selectin'
     )
+    
+    

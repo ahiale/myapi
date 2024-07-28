@@ -6,6 +6,7 @@ from app.models.enfant_video import enfant_video  # Import de la table de liaiso
 from app.models.parent_video import parent_video
 from app.models.enums import Type_Video_Enum
 from app.models.categorie_video import categorie_video  # Import de la table de liaison
+# from app.models.categorie_video import CategorieVideo 
 
 class Video(Base):
 
@@ -27,7 +28,8 @@ class Video(Base):
     categories = relationship(
         "Categorie",
         secondary=categorie_video,
-        back_populates="videos"
+        back_populates="videos",
+        lazy='selectin'
     )
     enfants = relationship(
         "Enfant",

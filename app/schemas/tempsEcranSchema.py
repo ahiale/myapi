@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 from datetime import time
-from typing import Optional, Literal
+from typing import List, Optional, Literal
 
 class TempsEcranBase(BaseModel):
-    joursA: Literal['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
-    heuresD: time
-    heuresF: time
+    joursA: Optional[List[str]]
+    heuresD: Optional[time]
+    heuresF: Optional[time]
     enfant_id: str
 
     class Config:
@@ -16,7 +16,7 @@ class TempsEcranCreate(TempsEcranBase):
 
 class TempsEcranUpdate(BaseModel):
     heuresD: Optional[time] = None
-    joursA: Optional[Literal['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']] = None
+    joursA: Optional[List[str]] = None
     heuresF: Optional[time] = None
 
     class Config:

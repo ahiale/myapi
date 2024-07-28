@@ -4,7 +4,7 @@ from app.models.tempsEcran import TempsEcran
 from app.models.enfant import Enfant
 # from schemas.tempsEcranSchema import TempsEcranCreate, TempsEcranUpdate 
 from database import get_db
-from app.crud.tempsEcranService import get_tempsEcran, get_all_tempsEcrans, create_tempsEcran, update_tempsEcran, delete_tempsEcran
+from app.crud.tempsEcranService import get_tempsEcran, get_all_tempsEcrans, create_tempsEcran, update_tempsEcran, delete_tempsEcran, get_enfant_id_by_temps_ecran_id
 from app.crud.utils import generate_id
 from app.schemas.tempsEcranSchema import TempsEcranCreate,TempsEcranUpdate
 
@@ -31,7 +31,7 @@ def read_tempsEcran_controller(tempsEcran_id: str, db: Session = Depends(get_db)
     
 
 # POST /tempsEcran/
-@router.post("/")
+@router.post("/CreateTempsEcran")
 def create_tempsEcran_controller(tempsEcran: TempsEcranCreate, db: Session = Depends(get_db)):
     try:
         tempsEcran = create_tempsEcran(tempsEcran, db)
@@ -66,4 +66,7 @@ def delete_tempsEcran_controller(tempsEcran_id: str, db: Session = Depends(get_d
         return {"message": "TempsEcran deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+@router.get("/{tempsEcran_id}/enfant_id")
+def get_enfant_id(tempsEcran_id: str, db: Session = Depends(get_db)):
+    return get_enfant_id_by_temps_ecran_id(tempsEcran_id, db)

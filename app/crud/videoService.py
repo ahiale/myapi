@@ -1,6 +1,12 @@
+import os
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status,Depends
+from fastapi import HTTPException, status,Depends,UploadFile,File
+from fastapi.responses import JSONResponse
+import requests # type: ignore
+# from moviepy.editor import VideoFileClip
 from app.models.video import Video
+from app.models.categorie_video import categorie_video
+
 from app.models.admin import Admin
 from app.models.saison import Saison
 from app.models.enfant_video import enfant_video
@@ -10,8 +16,21 @@ from app.models.enums import Type_Video_Enum
 from database import get_db
 from app.crud.utils import generate_id
 import logging
+import httpx
 import json
 from datetime import datetime
+from dotenv import load_dotenv
+from app.constants.urls import SERVER_ADDRESS
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
+SUPABASE_BUCKET = "medias"
+
+headers = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+}
 
 
 
@@ -34,7 +53,6 @@ def create_video(video: VideoCreate, db:Session=Depends(get_db)):
     admin = db.query(Admin).filter(Admin.id == video.admin_id).first()
     if not admin:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Aucun admin n'est associe a cette video")
-   
     rand_id= generate_id()
     while retriveVideo(rand_id, db):
         rand_id=generate_id()
@@ -47,15 +65,23 @@ def create_video(video: VideoCreate, db:Session=Depends(get_db)):
         url=str(video.url),
         type_video=Type_Video_Enum(video.type_video),
         admin_id=video.admin_id,
-        saison_id=video.saison_id,
-        
+        saison_id=video.saison_id,   
     )
     
     try:
         db.add(db_video)
         db.commit()
         db.refresh(db_video)
-        return db_video    
+        db.execute(categorie_video.insert().values(categorie_id=video.categorie_id, video_id=db_video.id))
+        db.commit()
+        # result = db.execute(
+        #     categorie_video.select().where(
+        #         (categorie_video.c.categorie_id == video.categorie_id) &
+        #         (categorie_video.c.video_id == db_video.id)
+        #     )
+        # ).first()
+        
+        return db_video 
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -149,10 +175,11 @@ def consulter_video(enfant_id: str, video_id: str, db: Session = Depends(get_db)
         if enfant.historique_video is None:
             enfant.historique_video=[historique_str]
         else:
-            enfant.historique_video.append(historique_str)
-    
+            new_historique=[hist for hist in enfant.historique_video]
+            new_historique.append(historique_str)
+            enfant.historique_video= new_historique
+        logging.info(enfant.historique_video)
         db.commit()
-        db.refresh(enfant)
         return True
 
     except Exception as e:
@@ -176,5 +203,27 @@ def readHistorique(enfant_id:str, db: Session = Depends(get_db)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))  
+    
+# methode pour upload une video
+async def generate_signed_url(file_name: str, expires_in: int):
+    url = f"{SUPABASE_URL}/storage/v1/object/sign/{SUPABASE_BUCKET}/{file_name}?expiresIn={expires_in}"
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, timeout=30.0)  # Timeout de 30 secondes
+        if response.status_code == 200:
+            return response.json().get('signedURL')
+        else:
+            print(f"Failed to generate signed URL: {response.status_code} - {response.text}")
+            return None
 
-   
+async def upload_file(file: UploadFile = File(...)):
+    file_content = await file.read()
+    file_name = file.filename
+
+    try:
+        with open("media/videos/"+file_name, 'wb') as f:
+            f.write(file_content)
+        return {"message": "File uploaded successfully","url":f"{SERVER_ADDRESS}/media/video/{file_name}"}
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()

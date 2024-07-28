@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
+from datetime import time
 
 class ParentBase(BaseModel):
     nom: str
@@ -23,5 +24,20 @@ class ParentUpdate(BaseModel):
     email: Optional[EmailStr] = None
     codeParental: Optional[str] = None
     
+class Token(BaseModel):
+    access_token:str
+    token_type:str
+    
+class DataToken(BaseModel):
+    id: Optional[str]=None
+    
+class ParentOutput (BaseModel):
+    email:str
+    id:int
+    created_at:time
+    class config:
+        orm_mode=True
 
-
+class LoginSchema(BaseModel):
+    email: str
+    password: str
