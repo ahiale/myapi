@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from app.routes import parentController, enfantController, adminController, tempsEcranController, videoController, saisonController, serieController, categorieController, categorieVideoController 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI()
 origins = [
     "http://localhost:3000",  # L'origine de votre application frontend
@@ -30,5 +32,8 @@ app.include_router(categorieVideoController.router, prefix="/categorie_video", t
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+# app.mount("/media", StaticFiles(directory="media/video"), name="media")
 
 

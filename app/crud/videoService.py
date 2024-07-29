@@ -21,6 +21,8 @@ import json
 from datetime import datetime
 from dotenv import load_dotenv
 from app.constants.urls import SERVER_ADDRESS
+# import cv2
+
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")

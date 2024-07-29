@@ -60,7 +60,7 @@ def update_video_controller(video_id: str, video: VideoUpdate, db: Session = Dep
 
 
 #DELETE /video/{video_id}
-@router.delete("/{video_id}")
+@router.delete("/delete/{video_id}")
 def delete_video_controller(video_id: str, db: Session = Depends(get_db)):
     try:
         video = get_video(video_id, db)
@@ -72,7 +72,6 @@ def delete_video_controller(video_id: str, db: Session = Depends(get_db)):
         return {"message": "Video deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
     
 
 @router.post("/{video_id}/like")
