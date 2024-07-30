@@ -4,6 +4,7 @@ from fastapi import HTTPException, status,Depends,UploadFile,File
 from fastapi.responses import JSONResponse
 import requests # type: ignore
 # from moviepy.editor import VideoFileClip
+from app.models.enumsVideos import Type_Source_Enum
 from app.models.video import Video
 from app.models.categorie_video import categorie_video
 
@@ -64,8 +65,10 @@ def create_video(video: VideoCreate, db:Session=Depends(get_db)):
         titre= video.titre,
         description=video.description,
         duree=video.duree,
+        couverture=video.couverture,
         url=str(video.url),
         type_video=Type_Video_Enum(video.type_video),
+        tyepe_source=Type_Source_Enum(video.type_source),
         admin_id=video.admin_id,
         saison_id=video.saison_id,   
     )
@@ -101,7 +104,7 @@ def update_video(video_id: str, video_update: VideoUpdate, db:Session=Depends(ge
     video.url=str(video.url) if str(video.url) else video.url
     video.duree=video_update.duree if video_update.duree else video.duree
     video.type_video=Type_Video_Enum(video.type_video) if Type_Video_Enum(video.type_video) else video.type_video
-    
+    video.type_Source=Type_Source_Enum(video.type_Source) if Type_Video_Enum(video.type_Source) else video.type_Source
     db.commit()
     db.refresh(video)
     return video
@@ -224,7 +227,7 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         with open("media/videos/"+file_name, 'wb') as f:
             f.write(file_content)
-        return {"message": "File uploaded successfully","url":f"{SERVER_ADDRESS}/media/video/{file_name}"}
+        return {"message": "File uploaded successfully","url":f"http//{SERVER_ADDRESS}/media/{file_name}"}
     except Exception:
         return {"message": "There was an error uploading the file"}
     finally:
