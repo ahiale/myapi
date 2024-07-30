@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from app.routes import parentController, enfantController, adminController, tempsEcranController, videoController, saisonController, serieController, categorieController, categorieVideoController 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -34,6 +35,16 @@ def read_root():
     return {"Hello": "World"}
 
 
-# app.mount("/media", StaticFiles(directory="media/video"), name="media")
+app.mount("/media", StaticFiles(directory="media/videos"), name="media")
 
+
+@app.get("/media")
+async def read_video():
+    """
+    ## Get Video
+    This endpoint serves the video file `videoBanner2.mp4`.
+
+    - **Path:** `/media/videos/videoBanner2.mp4`
+    """
+    return RedirectResponse(url="media/videos/videoBanner2.mp4")
 

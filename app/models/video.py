@@ -1,6 +1,7 @@
 
 from sqlalchemy import Column, String, Integer, Enum, ForeignKey
 from sqlalchemy.orm import relationship
+from app.models.enumsVideos import Type_Source_Enum
 from database import Base
 from app.models.enfant_video import enfant_video  # Import de la table de liaison
 from app.models.parent_video import parent_video
@@ -16,6 +17,8 @@ class Video(Base):
     description= Column(String)
     duree= Column(String)
     url= Column(String)
+    type_Source= Column(Enum(Type_Source_Enum))
+    couverture= Column(String)
     type_video= Column(Enum(Type_Video_Enum))
     
     admin_id=Column(String, ForeignKey("admins.id"), nullable=True)

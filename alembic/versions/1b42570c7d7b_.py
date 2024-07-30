@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 711363a9d8c6
+Revision ID: 1b42570c7d7b
 Revises: 
-Create Date: 2024-07-06 23:47:44.296930
+Create Date: 2024-07-30 00:02:56.282064
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '711363a9d8c6'
+revision: str = '1b42570c7d7b'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,7 +27,8 @@ def upgrade() -> None:
     sa.Column('motDePasse', sa.String(), nullable=True),
     sa.Column('contact', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('contact')
     )
     op.create_index(op.f('ix_admins_email'), 'admins', ['email'], unique=True)
     op.create_index(op.f('ix_admins_nom'), 'admins', ['nom'], unique=False)
@@ -35,14 +36,6 @@ def upgrade() -> None:
     op.create_table('categories',
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('titre', sa.String(), nullable=True),
-    sa.Column('desc', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('series',
-    sa.Column('id', sa.String(), nullable=False),
-    sa.Column('titre', sa.String(), nullable=True),
-    sa.Column('description', sa.String(), nullable=True),
-    sa.Column('nb_saisons', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('parents',
@@ -56,8 +49,27 @@ def upgrade() -> None:
     sa.Column('codeParental', sa.String(), nullable=True),
     sa.Column('nbre_profil', sa.Integer(), nullable=True),
     sa.Column('historique_video', sa.String(), nullable=True),
-    sa.Column('admin_id', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['admin_id'], ['admins.id'], ),
+    sa.Column('maxProfilEnfant', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('contact'),
+    sa.UniqueConstraint('email')
+    )
+    op.create_table('series',
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('titre', sa.String(), nullable=True),
+    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('nb_saisons', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('enfants',
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('pseudo', sa.String(), nullable=True),
+    sa.Column('image_profil', sa.String(), nullable=True),
+    sa.Column('age', sa.Integer(), nullable=True),
+    sa.Column('code_pin', sa.String(), nullable=True),
+    sa.Column('historique_video', sa.ARRAY(sa.String()), nullable=True),
+    sa.Column('parent_id', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['parent_id'], ['parents.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('saisons',
@@ -68,18 +80,13 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['serie_id'], ['series.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('enfants',
+    op.create_table('tempsEcrans',
     sa.Column('id', sa.String(), nullable=False),
-    sa.Column('pseudo', sa.String(), nullable=True),
-    sa.Column('image_profil', sa.String(), nullable=True),
-    sa.Column('age', sa.Integer(), nullable=True),
-    sa.Column('allocation', sa.String(), nullable=True),
-    sa.Column('joursA', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('heuresA', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('code_pin', sa.String(), nullable=True),
-    sa.Column('historique_video', sa.ARRAY(sa.String()), nullable=True),
-    sa.Column('parent_id', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['parent_id'], ['parents.id'], ),
+    sa.Column('joursA', sa.String(), nullable=True),
+    sa.Column('heuresD', sa.Time(), nullable=True),
+    sa.Column('heuresF', sa.Time(), nullable=True),
+    sa.Column('enfant_id', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['enfant_id'], ['enfants.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('videos',
@@ -88,6 +95,8 @@ def upgrade() -> None:
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('duree', sa.String(), nullable=True),
     sa.Column('url', sa.String(), nullable=True),
+    sa.Column('type_Source', sa.Enum('YOUTUBE', 'DAILYMOTION', 'ANIMESAMA', 'UPLOAD', name='type_source_enum'), nullable=True),
+    sa.Column('couverture', sa.String(), nullable=True),
     sa.Column('type_video', sa.Enum('FILM', 'EPISODE', name='type_video_enum'), nullable=True),
     sa.Column('admin_id', sa.String(), nullable=True),
     sa.Column('saison_id', sa.String(), nullable=True),
@@ -110,18 +119,28 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['video_id'], ['videos.id'], ),
     sa.PrimaryKeyConstraint('enfant_id', 'video_id')
     )
+    op.create_table('parent_video',
+    sa.Column('parent_id', sa.String(), nullable=False),
+    sa.Column('video_id', sa.String(length=255), nullable=False),
+    sa.Column('like', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['parent_id'], ['parents.id'], ),
+    sa.ForeignKeyConstraint(['video_id'], ['videos.id'], ),
+    sa.PrimaryKeyConstraint('parent_id', 'video_id')
+    )
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table('parent_video')
     op.drop_table('enfant_video')
     op.drop_table('categorie_video')
     op.drop_table('videos')
-    op.drop_table('enfants')
+    op.drop_table('tempsEcrans')
     op.drop_table('saisons')
-    op.drop_table('parents')
+    op.drop_table('enfants')
     op.drop_table('series')
+    op.drop_table('parents')
     op.drop_table('categories')
     op.drop_index(op.f('ix_admins_prenom'), table_name='admins')
     op.drop_index(op.f('ix_admins_nom'), table_name='admins')
