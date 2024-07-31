@@ -35,16 +35,18 @@ def read_root():
     return {"Hello": "World"}
 
 
-app.mount("/media", StaticFiles(directory="media/videos"), name="media")
+app.mount("/videos", StaticFiles(directory="media/videos"), name="videos")
+
+app.mount("/images", StaticFiles(directory="media/couvertures"), name="images")
 
 
-@app.get("/media")
-async def read_video():
-    """
-    ## Get Video
-    This endpoint serves the video file `videoBanner2.mp4`.
+# @app.get("/media")
+# async def read_video():
+#     """
+#     ## Get Video
+#     This endpoint serves the video file `videoBanner2.mp4`.
 
-    - **Path:** `/media/videos/videoBanner2.mp4`
-    """
-    return RedirectResponse(url="media/videos/videoBanner2.mp4")
+#     - **Path:** `/media/videos/videoBanner2.mp4`
+#     """
+#     return RedirectResponse(url="media/videos/videoBanner2.mp4")
 

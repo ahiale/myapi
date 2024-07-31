@@ -1,6 +1,6 @@
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status,Depends,APIRouter,Query, UploadFile, File
+from fastapi import Form, HTTPException, status,Depends,APIRouter,Query, UploadFile, File
 from app.models.video import Video
 from app.models.parent import Parent
 from typing import List
@@ -8,7 +8,7 @@ from typing import List
 from database import get_db
 from app.crud.videoService import get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file
 from app.crud.utils import generate_id
-from app.schemas.videoSchema import VideoCreate,VideoUpdate, SearchCriteria, VideoBase
+from app.schemas.videoSchema import TypeSourceEnum, TypeVideoEnum, VideoCreate,VideoUpdate, SearchCriteria, VideoBase
 from app.models import categorie
 from fastapi.responses import FileResponse
 # from fastapi.responses import JSONResponse
@@ -38,10 +38,18 @@ def read_video_controller(video_id: str, db: Session = Depends(get_db)):
     
 
 # POST /video/
-@router.post("/")
-def create_video_controller(video: VideoCreate, db: Session = Depends(get_db)):
+@router.post("/createVideo")
+async def create_video_controller(titre:str= Form(...),description : str=Form(...),duree:str=Form(...),type_video:int=Form(...),video_source:int=Form(...),url: str=Form(...),saison_id:str=None,categorie_id:str=Form(...), couverture:UploadFile = File(...), db: Session = Depends(get_db)):
     try:
-        video = create_video(video, db)
+        video = await create_video(VideoCreate(
+            titre=titre,
+            description = description,
+            duree=duree,
+            type_video=TypeVideoEnum(type_video),
+            type_source=TypeSourceEnum(video_source),
+            url=url,
+            saison_id=saison_id,
+            categorie_id=categorie_id),couverture, db)
         return video,status.HTTP_201_CREATED
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

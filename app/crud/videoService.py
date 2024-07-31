@@ -51,24 +51,28 @@ def get_video(video_id: str, db:Session=Depends(get_db)):
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-def create_video(video: VideoCreate, db:Session=Depends(get_db)):
+async def create_video(video: VideoCreate, couverture:UploadFile = File(...), db:Session=Depends(get_db)):
+    
          # Vérifie que le admin existe
     admin = db.query(Admin).filter(Admin.id == video.admin_id).first()
-    if not admin:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Aucun admin n'est associe a cette video")
+    # if not admin:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Aucun admin n'est associe a cette video")
     rand_id= generate_id()
     while retriveVideo(rand_id, db):
         rand_id=generate_id()
+        
+    couv= await upload_image(couverture)
     
     db_video = Video(
+        
         id=rand_id,
         titre= video.titre,
         description=video.description,
         duree=video.duree,
-        couverture=video.couverture,
+        couverture=couv["url"],
         url=str(video.url),
         type_video=Type_Video_Enum(video.type_video),
-        tyepe_source=Type_Source_Enum(video.type_source),
+        type_Source=Type_Source_Enum(video.type_source),
         admin_id=video.admin_id,
         saison_id=video.saison_id,   
     )
@@ -98,8 +102,10 @@ def update_video(video_id: str, video_update: VideoUpdate, db:Session=Depends(ge
     if not video:
         raise HTTPException(status_code=404, detail=f"User with ID {video_id} not found")
     
+    couv=upload_image(video.couverture)
     
     video.titre=video_update.titre if video_update.titre else video.titre
+    video.couverture=couv["url"] if video_update.couverture else video.couverture
     video.description=video_update.description if video_update.description else video.description
     video.url=str(video.url) if str(video.url) else video.url
     video.duree=video_update.duree if video_update.duree else video.duree
@@ -227,7 +233,20 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         with open("media/videos/"+file_name, 'wb') as f:
             f.write(file_content)
-        return {"message": "File uploaded successfully","url":f"http//{SERVER_ADDRESS}/media/{file_name}"}
+        return {"message": "File uploaded successfully","url":f"http://{SERVER_ADDRESS}/videos/{file_name}"}
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
+
+async def upload_image(file: UploadFile = File(...)):
+    file_content = await file.read()
+    file_name = file.filename
+
+    try:
+        with open("media/couvertures/"+file_name, 'wb') as f:
+            f.write(file_content)
+        return {"message": "File uploaded successfully","url":f"http://{SERVER_ADDRESS}/images/{file_name}"}
     except Exception:
         return {"message": "There was an error uploading the file"}
     finally:

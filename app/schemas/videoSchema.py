@@ -1,3 +1,5 @@
+from importlib.metadata import files
+from fastapi import File, UploadFile
 from pydantic import BaseModel, HttpUrl
 from typing import Optional
 from enum import Enum as PyEnum
@@ -16,13 +18,13 @@ class TypeSourceEnum(PyEnum):
     UPLOAD=4
 
 class VideoBase(BaseModel):
+    # couverture:UploadFile = File(...)
     titre: str
     description: str 
     duree: str 
     type_video: TypeVideoEnum 
     url: HttpUrl
     type_source:TypeSourceEnum
-    couverture:str
     admin_id:str
     saison_id:str
 
@@ -33,13 +35,15 @@ class VideoBase(BaseModel):
 
 class VideoCreate(VideoBase):
     categorie_id:str
+    admin_id:Optional[str] = None
+    saison_id:Optional[str] = None
 
     
 class VideoUpdate(BaseModel):
+    # couverture: Optional[UploadFile] = File(...)
     titre: Optional[str] = None
     description: Optional[str] = None
     duree: Optional[str] = None
-    couverture: Optional[str] = None
     type_video: Optional[TypeVideoEnum] = None
     url: Optional[HttpUrl] = None
     type_source: Optional[TypeSourceEnum] = None
