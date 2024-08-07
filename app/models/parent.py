@@ -17,8 +17,6 @@ class Parent(Base):
     nbre_profil = Column(Integer)
     historique_video = Column(String)
     maxProfilEnfant=Column(Integer, default=3)
-
-    
     # #Relation de plusieurs a un avec enfant
     enfants= relationship("Enfant", back_populates="parent")
     

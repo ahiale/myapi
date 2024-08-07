@@ -197,23 +197,55 @@ def consulter_video(enfant_id: str, video_id: str, db: Session = Depends(get_db)
         print(e)
         raise HTTPException(status_code=500, detail=str(e))  
     
-def readHistorique(enfant_id:str, db: Session = Depends(get_db)):
-    allhistorique=[]
+# def readHistorique(enfant_id:str, db: Session = Depends(get_db)):
+#     allhistorique=[]
+#     enfant = db.query(Enfant).filter(Enfant.id == enfant_id).first()
+#     try:
+#         for historique in enfant.historique_video:
+#             logging.info(historique)
+#             historique_obj=json.loads(historique)
+#             video=get_video(historique_obj['video_id'], db)
+#             allhistorique.append({
+#                 "id": video.id,
+#                 "url":video.url,
+#                 "description":video.description,
+#                 "couverture":video.couverture,
+#                 "titre": video.titre,
+#                 "date": historique_obj['date'],
+                
+#             })
+#         return allhistorique
+#     except Exception as e:
+#         print(e)
+#         raise HTTPException(status_code=500, detail=str(e))  
+
+def readHistorique(enfant_id: str, db: Session = Depends(get_db)):
+    historique_dict = {}
     enfant = db.query(Enfant).filter(Enfant.id == enfant_id).first()
+    if enfant is None:
+        raise HTTPException(status_code=404, detail="Enfant not found")
+    
     try:
         for historique in enfant.historique_video:
-            logging.info(historique)
-            historique_obj=json.loads(historique)
-            video=get_video(historique_obj['video_id'], db)
-            allhistorique.append({
-                "titre": video.titre,
-                "date": historique_obj['date'],
-                
-            })
+            historique_obj = json.loads(historique)
+            video = get_video(historique_obj['video_id'], db)
+            
+            video_id = video.id
+            if video_id not in historique_dict or historique_obj['date'] > historique_dict[video_id]['date']:
+                historique_dict[video_id] = {
+                    "id": video.id,
+                    "url": video.url,
+                    "description": video.description,
+                    "couverture": video.couverture,
+                    "titre": video.titre,
+                    "date": historique_obj['date']
+                }
+        
+        allhistorique = list(historique_dict.values())
         return allhistorique
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))  
+        logging.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
     
 # methode pour upload une video
 async def generate_signed_url(file_name: str, expires_in: int):

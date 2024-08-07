@@ -3,11 +3,11 @@ from sqlalchemy import Column, String, Integer, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.enumsVideos import Type_Source_Enum
 from database import Base
-from app.models.enfant_video import enfant_video  # Import de la table de liaison
+from app.models.enfant_video import enfant_video  
 from app.models.parent_video import parent_video
 from app.models.enums import Type_Video_Enum
-from app.models.categorie_video import categorie_video  # Import de la table de liaison
-# from app.models.categorie_video import CategorieVideo 
+from app.models.categorie_video import categorie_video  
+
 
 class Video(Base):
 
@@ -20,14 +20,11 @@ class Video(Base):
     type_Source= Column(Enum(Type_Source_Enum))
     couverture= Column(String)
     type_video= Column(Enum(Type_Video_Enum))
-    
     admin_id=Column(String, ForeignKey("admins.id"), nullable=True)
     saison_id= Column(String, ForeignKey("saisons.id"), nullable=True)
-    #Relation plusieurs a un avec admin
     admin= relationship("Admin", back_populates="videos")
-    #Relation plusieurs a un avec saison
     saison= relationship("Saison", back_populates="videos")
-    
+    views = Column(Integer, default=0)  # Ajout du champ views
     categories = relationship(
         "Categorie",
         secondary=categorie_video,

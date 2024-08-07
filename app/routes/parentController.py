@@ -47,7 +47,7 @@ def create_parent_controller(parent: ParentCreate, db: Session = Depends(get_db)
 
 
 #PUT /parent/{parent_id}
-@router.put("/{parent_id}")
+@router.put("/updateParent/{parent_id}")
 def update_parent_controller(parent_id: str, parent: ParentUpdate, db: Session = Depends(get_db)):
     try:
         parent = update_parent(parent_id, parent, db)

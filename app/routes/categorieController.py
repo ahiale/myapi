@@ -29,7 +29,7 @@ def read_categorie_controller(categorie_id: str, db: Session = Depends(get_db)):
     
 
 # POST /categorie/
-@router.post("/")
+@router.post("/createCategorie")
 def create_categorie_controller(categorie: CategorieCreate, db: Session = Depends(get_db)):
     try:
         categorie = create_categorie(categorie, db)
@@ -41,7 +41,7 @@ def create_categorie_controller(categorie: CategorieCreate, db: Session = Depend
 
 
 #PUT /categorie/{categorie_id}
-@router.put("/{categorie_id}")
+@router.put("/editCategorie/{categorie_id}")
 def update_categorie_controller(categorie_id: str, categorie: CategorieUpdate, db: Session = Depends(get_db)):
     try:
         categorie = update_categorie(categorie_id, categorie, db)
@@ -53,7 +53,7 @@ def update_categorie_controller(categorie_id: str, categorie: CategorieUpdate, d
 
 
 #DELETE /categorie/{categorie_id}
-@router.delete("/{categorie_id}")
+@router.delete("/deleteCategorie/{categorie_id}")
 def delete_categorie_controller(categorie_id: str, db: Session = Depends(get_db)):
     try:
         categorie = get_categorie(categorie_id, db)

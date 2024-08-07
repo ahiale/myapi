@@ -1,3 +1,4 @@
+import logging
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from fastapi import Form, HTTPException, status,Depends,APIRouter,Query, UploadFile, File
@@ -92,7 +93,7 @@ def like_video(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/{video_id}/consulter")
+@router.post("/{video_id}/{enfant_id}/consulter")
 def consulter_video_endpoint(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
     try:
         consulter_video(enfant_id, video_id, db)
@@ -128,5 +129,21 @@ async def upload(file: UploadFile = File(...)):
 async def readVideo(video_name: str):
     path = f"{video_folder}{video_name}"
     return FileResponse(path)
+
+@router.get("/videos/most_viewed")
+def get_most_viewed_videos(db: Session = Depends(get_db)):
+    try:
+        # Rechercher les vidéos triées par le nombre de vues en ordre décroissant
+       
+        videos = db.query(Video).order_by(Video.views.desc()).limit(10).all()
+
+        
+        # Formater les données pour la réponse
+        response = [{"id": video.id, "titre": video.titre, "views": video.views} for video in videos]
+        
+        return response
+    except Exception as e:
+        logging.error(f"Error fetching most viewed videos: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
     
         

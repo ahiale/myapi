@@ -17,13 +17,11 @@ class Enfant(Base):
     parent= relationship("Parent", back_populates="enfants")
     
      # #Relation de un a un avec tempsEcran
-    
     videos = relationship(
         "Video",
         secondary=enfant_video,
         back_populates="enfants"
     )
-    
     #Relation de plusieurs a un avec TempsEcran
     tempsEcrans= relationship("TempsEcran", back_populates="enfant")
     
