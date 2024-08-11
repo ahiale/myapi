@@ -3,10 +3,7 @@
     "functions": {
       "api": {
         "runtime": "@vercel/python@3.12",
-        "config": {
-          "maxLambdaSize": "15mb"
-        }
+        "handler": "main:app" 
       }
     }
   }
-  
