@@ -60,6 +60,7 @@ async def create_video_controller(titre:str= Form(...),description : str=Form(..
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
 #PUT /video/{video_id}
 @router.put("/edit/{video_id}")
 def update_video_controller(video_id: str, video: VideoUpdate, db: Session = Depends(get_db)):
