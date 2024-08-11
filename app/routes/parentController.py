@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
+from app.crud import parentService
 from app.models.enfant import Enfant
 from app.models.parent import Parent
 # from schemas.parentSchema import ParentCreate, ParentUpdate 
@@ -110,4 +111,13 @@ def get_registrations_per_day():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
+@router.get("/{parent_id}/contact")
+def get_contact(parent_id: str, db: Session = Depends(get_db)):
+    """Retourne le contact d'un parent grâce à son ID ou null si non trouvé."""
+    query = select(Parent).filter_by(id=parent_id)
+    parent = db.execute(query).scalars().first()
+    if parent:
+        return {"contact": parent.contact}
+    else:
+        return {"contact": None}
+    

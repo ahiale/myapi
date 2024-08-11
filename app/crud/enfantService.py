@@ -95,9 +95,6 @@ def delete_enfant( enfant_id: str, db:Session=Depends(get_db)):
 #     return db.query(Enfant).all()
      
 #     # return "enfants"
-    
-    
-    
 
 def get_all_enfants(db: Session = Depends(get_db)):
     try:

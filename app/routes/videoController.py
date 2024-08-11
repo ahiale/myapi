@@ -14,7 +14,7 @@ from app.models import categorie, enfant_video
 from fastapi.responses import FileResponse
 from sqlalchemy.sql import select
 from sqlalchemy.engine import Connection
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 # from fastapi.responses import JSONResponse
 # from app.models.categorie_video import CategorieVideo
 
@@ -155,6 +155,19 @@ def get_like_status_route(video_id: str, enfant_id: str, db: Session = Depends(g
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+# @router.get("/top-liked-videos")
+# def get_top_liked_videos(db: Session = Depends(get_db)):
+#     """Retourne les vidéos les plus aimées, jusqu'à un maximum de 10 vidéos, ou un tableau vide si aucune vidéo n'a été aimée."""
+#     query = select(Video).filter(Video.nbre_like > 0).order_by(desc(Video.nbre_like)).limit(10)
+#     videos = db.execute(query).scalars().all()
+#     return [
+#         {
+#             "titre": video.titre,
+#             "nbre_like": video.nbre_like
+#         }
+#         for video in videos
+#     ]
 
     
-        
+     

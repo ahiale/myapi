@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
 from app.models.parent import Parent
@@ -128,5 +129,8 @@ def get_all_parents(db: Session = Depends(get_db)):
     except Exception as e:
         logging.error(f"Error fetching parents: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+
 
 

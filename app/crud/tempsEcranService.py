@@ -62,13 +62,19 @@ def update_tempsEcran(tempsEcran_id: str, tempsEcran_update: TempsEcranUpdate, d
     if not tempsEcran:
         raise HTTPException(status_code=404, detail=f"User with ID {tempsEcran_id} not found")
     
-    tempsEcran.heuresD=tempsEcran_update.heuresD if tempsEcran_update.heuresD else tempsEcran.heuresD
-    tempsEcran.heuresF=tempsEcran_update.heuresF if tempsEcran_update.heuresF else tempsEcran.heuresF
-    tempsEcran.joursA=tempsEcran_update.joursA if tempsEcran_update.joursA else tempsEcran.joursA
+    try:
     
-    db.commit()
-    db.refresh(tempsEcran)
-    return tempsEcran
+        tempsEcran.heuresD=tempsEcran_update.heuresD if tempsEcran_update.heuresD else tempsEcran.heuresD
+        tempsEcran.heuresF=tempsEcran_update.heuresF if tempsEcran_update.heuresF else tempsEcran.heuresF
+        tempsEcran.joursA=tempsEcran_update.joursA if tempsEcran_update.joursA else tempsEcran.joursA
+    
+        db.commit()
+        db.refresh(tempsEcran)
+        return tempsEcran
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(status_code=500, detail="International server error")
+    
 
 def delete_tempsEcran( tempsEcran_id: str, db:Session=Depends(get_db)):
     tempsEcran = get_tempsEcran(tempsEcran_id,db)

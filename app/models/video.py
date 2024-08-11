@@ -25,6 +25,7 @@ class Video(Base):
     admin= relationship("Admin", back_populates="videos")
     saison= relationship("Saison", back_populates="videos")
     nbre_like= Column(Integer, default=0)
+    temps_visionnage = Column(Integer, default=0)
     categories = relationship(
         "Categorie",
         secondary=categorie_video,
