@@ -14,8 +14,6 @@ router=APIRouter()
 @router.get("/read_all_enfants")
 def readU(db: Session=Depends(get_db)):
     enfants=get_all_enfants(db)
-    if not enfants:
-        raise HTTPException(status_code=404, detail="No enfant found")
     return enfants
 
 # GET /enfant/{enfant_id}

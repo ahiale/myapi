@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta, timezone
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
 from app.models.enfant import Enfant
 from app.models.parent import Parent
 # from schemas.parentSchema import ParentCreate, ParentUpdate 
-from database import get_db
+from database import SessionLocal, get_db
 from app.crud.parentService import get_all_parents, get_parent, create_parent, update_parent, delete_parent
 from app.crud.utils import generate_id
 from app.schemas.parentSchema import ParentCreate,ParentUpdate
@@ -76,6 +78,36 @@ def delete_parent_controller(parent_id: str, db: Session = Depends(get_db)):
 def get_token(data: LoginSchema, db: Session = Depends(get_db)):
     token = login(data, db)
     return token
+
+
+@router.get("/stats/registrations-per-day")
+def get_registrations_per_day():
+    try:
+        db: Session = SessionLocal()
+        
+        today = datetime.now()
+        one_month_ago = today - timedelta(days=30)
+
+        registrations = db.query(Parent).filter(Parent.date_inscription >= one_month_ago).all()
+
+        # Créer un dictionnaire pour compter les inscriptions par jour
+        registration_counts = {}
+        for parent in registrations:
+            day = parent.date_inscription.strftime("%Y-%m-%d")
+            if day in registration_counts:
+                registration_counts[day] += 1
+            else:
+                registration_counts[day] = 1
+
+        # Formater les données pour la réponse
+        response = {"registrations_per_day": []}
+        for day, count in registration_counts.items():
+            response["registrations_per_day"].append({"date": day, "count": count})
+        
+        return response
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 

@@ -1,4 +1,5 @@
-from sqlalchemy import Column,String,Integer,Boolean, ForeignKey
+from datetime import datetime, timezone
+from sqlalchemy import Column, DateTime,String,Integer,Boolean, ForeignKey
 from database import Base
 from sqlalchemy.orm import relationship
 from app.models.parent_video import parent_video
@@ -17,6 +18,7 @@ class Parent(Base):
     nbre_profil = Column(Integer)
     historique_video = Column(String)
     maxProfilEnfant=Column(Integer, default=3)
+    date_inscription = Column(DateTime, default=lambda: datetime.now(timezone.utc)) 
     # #Relation de plusieurs a un avec enfant
     enfants= relationship("Enfant", back_populates="parent")
     

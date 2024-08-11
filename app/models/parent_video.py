@@ -6,5 +6,6 @@ parent_video = Table(
     Base.metadata,
     Column("parent_id", String, ForeignKey("parents.id"), primary_key=True),
     Column("video_id", String(255), ForeignKey("videos.id"), primary_key=True),
-    Column("like", Boolean)
+    Column("interested", Boolean),
+    Column("motifs", String)
 )

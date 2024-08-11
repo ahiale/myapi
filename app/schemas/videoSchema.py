@@ -22,6 +22,7 @@ class VideoBase(BaseModel):
     titre: str
     description: str 
     duree: str 
+    nbre_like:int
     type_video: TypeVideoEnum 
     url: HttpUrl
     type_source:TypeSourceEnum
@@ -43,6 +44,7 @@ class VideoUpdate(BaseModel):
     # couverture: Optional[UploadFile] = File(...)
     titre: Optional[str] = None
     description: Optional[str] = None
+    nbre_like: Optional[int] = None
     duree: Optional[str] = None
     type_video: Optional[TypeVideoEnum] = None
     url: Optional[HttpUrl] = None
@@ -51,3 +53,9 @@ class VideoUpdate(BaseModel):
 class SearchCriteria(BaseModel):
     query: str =None # La chaîne de recherche que l'enfant entre
     # categorie: str = None  # Optionnel: catégorie spécifique de vidéo
+
+
+class LikeResponse(BaseModel):
+    enfant_id: str
+    video_id: str
+    like: bool

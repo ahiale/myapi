@@ -24,7 +24,7 @@ class Video(Base):
     saison_id= Column(String, ForeignKey("saisons.id"), nullable=True)
     admin= relationship("Admin", back_populates="videos")
     saison= relationship("Saison", back_populates="videos")
-    views = Column(Integer, default=0)  # Ajout du champ views
+    nbre_like= Column(Integer, default=0)
     categories = relationship(
         "Categorie",
         secondary=categorie_video,

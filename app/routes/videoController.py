@@ -7,11 +7,14 @@ from app.models.parent import Parent
 from typing import List
 # from schemas.videoSchema import VideoCreate, VideoUpdate 
 from database import get_db
-from app.crud.videoService import get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file
+from app.crud.videoService import get_like_status, get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file, retirer_like
 from app.crud.utils import generate_id
 from app.schemas.videoSchema import TypeSourceEnum, TypeVideoEnum, VideoCreate,VideoUpdate, SearchCriteria, VideoBase
-from app.models import categorie
+from app.models import categorie, enfant_video
 from fastapi.responses import FileResponse
+from sqlalchemy.sql import select
+from sqlalchemy.engine import Connection
+from sqlalchemy import create_engine
 # from fastapi.responses import JSONResponse
 # from app.models.categorie_video import CategorieVideo
 
@@ -50,6 +53,7 @@ async def create_video_controller(titre:str= Form(...),description : str=Form(..
             type_source=TypeSourceEnum(video_source),
             url=url,
             saison_id=saison_id,
+            nbre_like=0,
             categorie_id=categorie_id),couverture, db)
         return video,status.HTTP_201_CREATED
     except Exception as e:
@@ -57,14 +61,16 @@ async def create_video_controller(titre:str= Form(...),description : str=Form(..
 
 
 #PUT /video/{video_id}
-@router.put("/{video_id}")
+@router.put("/edit/{video_id}")
 def update_video_controller(video_id: str, video: VideoUpdate, db: Session = Depends(get_db)):
+    
     try:
         video = update_video(video_id, video, db)
         if not video:
             raise HTTPException(status_code=404, detail="Video not found")
         return video,status.HTTP_200_OK
     except Exception as e:
+        logging.info(video)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -83,15 +89,19 @@ def delete_video_controller(video_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@router.post("/{video_id}/like")
+@router.post("/{video_id}/{enfant_id}/like")
 def like_video(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
     try:
-        liker_video(enfant_id, video_id, db)
-        return {"message": "Video liked successfully"}, status.HTTP_200_OK
+        # Appeler la fonction pour gérer l'ajout ou la suppression du like
+        res = liker_video(enfant_id, video_id, db)
+        return res
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
 
 @router.post("/{video_id}/{enfant_id}/consulter")
 def consulter_video_endpoint(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
@@ -130,20 +140,21 @@ async def readVideo(video_name: str):
     path = f"{video_folder}{video_name}"
     return FileResponse(path)
 
-@router.get("/videos/most_viewed")
-def get_most_viewed_videos(db: Session = Depends(get_db)):
-    try:
-        # Rechercher les vidéos triées par le nombre de vues en ordre décroissant
-       
-        videos = db.query(Video).order_by(Video.views.desc()).limit(10).all()
 
+    
+@router.get("/video/{video_id}/{enfant_id}/like_status")
+def get_like_status_route(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
+    try:
+        # Appeler la méthode pour obtenir l'état du like
+        result = get_like_status(db, video_id, enfant_id)
         
-        # Formater les données pour la réponse
-        response = [{"id": video.id, "titre": video.titre, "views": video.views} for video in videos]
+        # Si le résultat contient un message d'erreur, lever une exception HTTP
+        if "detail" in result:
+            raise HTTPException(status_code=404, detail=result["detail"])
         
-        return response
+        return result
     except Exception as e:
-        logging.error(f"Error fetching most viewed videos: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(e))
+
     
         

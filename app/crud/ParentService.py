@@ -23,8 +23,6 @@ def get_parent(parent_id: str, db:Session=Depends(get_db)):
     parent = db.query(Parent).filter(Parent.id == parent_id).first()
     if not parent:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="cet parent n'a pas ete trouve")
-    child_count = len(parent.enfants)
-
     return parent
 
 def login(login_data: LoginSchema, db: Session = Depends(get_db)):
@@ -44,7 +42,7 @@ def login(login_data: LoginSchema, db: Session = Depends(get_db)):
         )
     
     token= create_access_token(parent.id)
-    return {" token:"+ token, "id:" + parent.id}
+    return {"token": token, "id" : parent.id}
 
 def create_parent(parent: ParentCreate, db:Session=Depends(get_db)):
     
@@ -81,9 +79,6 @@ def create_parent(parent: ParentCreate, db:Session=Depends(get_db)):
     except Exception as e:
         logging.error(f"Error fetching parents: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="International server error")
-    
-    
-
     
 
 def update_parent(parent_id: str, parent_update: ParentUpdate, db:Session=Depends(get_db)):

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 1b42570c7d7b
+Revision ID: be622c8e0f56
 Revises: 
-Create Date: 2024-07-30 00:02:56.282064
+Create Date: 2024-08-10 22:53:35.114787
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1b42570c7d7b'
+revision: str = 'be622c8e0f56'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -50,6 +50,7 @@ def upgrade() -> None:
     sa.Column('nbre_profil', sa.Integer(), nullable=True),
     sa.Column('historique_video', sa.String(), nullable=True),
     sa.Column('maxProfilEnfant', sa.Integer(), nullable=True),
+    sa.Column('date_inscription', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('contact'),
     sa.UniqueConstraint('email')
@@ -100,6 +101,7 @@ def upgrade() -> None:
     sa.Column('type_video', sa.Enum('FILM', 'EPISODE', name='type_video_enum'), nullable=True),
     sa.Column('admin_id', sa.String(), nullable=True),
     sa.Column('saison_id', sa.String(), nullable=True),
+    sa.Column('nbre_like', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admin_id'], ['admins.id'], ),
     sa.ForeignKeyConstraint(['saison_id'], ['saisons.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -122,7 +124,7 @@ def upgrade() -> None:
     op.create_table('parent_video',
     sa.Column('parent_id', sa.String(), nullable=False),
     sa.Column('video_id', sa.String(length=255), nullable=False),
-    sa.Column('like', sa.Boolean(), nullable=True),
+    sa.Column('interested', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['parent_id'], ['parents.id'], ),
     sa.ForeignKeyConstraint(['video_id'], ['videos.id'], ),
     sa.PrimaryKeyConstraint('parent_id', 'video_id')

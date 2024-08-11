@@ -14,7 +14,7 @@ class EnfantCreate(EnfantBase):
 class EnfantUpdate(BaseModel):
     pseudo: Optional[str] = None
     image_profil: Optional[str] = None
-    age: Optional[str] = None
+    age: Optional[int] = None
     code_pin: Optional [str] 
     
 

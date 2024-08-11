@@ -4,9 +4,9 @@ from app.models.admin import Admin
 from app.models.admin import Admin
 # from schemas.adminSchema import AdminCreate, AdminUpdate 
 from database import get_db
-from app.crud.adminService import get_admin, get_all_admins, create_admin, update_admin, delete_admin
+from app.crud.adminService import get_admin, get_all_admins, create_admin, login, update_admin, delete_admin
 from app.crud.utils import generate_id
-from app.schemas.adminSchema import AdminBase, AdminCreate, AdminUpdate
+from app.schemas.adminSchema import AdminBase, AdminCreate, AdminUpdate, LoginSchema
 
 
 router=APIRouter()
@@ -19,7 +19,7 @@ def readP(db: Session=Depends(get_db)):
     return admins
 
 # GET /admin/{admin_id}
-@router.get("/{admin_id}")
+@router.get("/getAdmin/{admin_id}")
 def read_admin_controller(admin_id: str, db: Session = Depends(get_db)):
     try:
         admin = get_admin(admin_id, db)
@@ -39,7 +39,11 @@ def create_admin_controller(admin: AdminCreate, db: Session = Depends(get_db)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
-
+    
+@router.post("/login")
+def get_token(data: LoginSchema, db: Session = Depends(get_db)):
+    token = login(data, db)
+    return token
 
 
 #PUT /admin/{admin_id}

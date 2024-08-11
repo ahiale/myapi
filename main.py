@@ -13,11 +13,12 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Permettre ces origines
+     allow_origins=["*"],  # Permettre ces origines
     allow_credentials=True,
     allow_methods=["*"],  # Permettre toutes les méthodes HTTP
     allow_headers=["*"],  # Permettre tous les en-têtes
 )
+
 
 app.include_router(enfantController.router, prefix="/enfant", tags=["enfant"])
 app.include_router(parentController.router, prefix="/parent", tags=["parent"])
