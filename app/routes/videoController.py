@@ -10,11 +10,11 @@ from database import get_db
 from app.crud.videoService import get_like_status, get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file, retirer_like
 from app.crud.utils import generate_id
 from app.schemas.videoSchema import TypeSourceEnum, TypeVideoEnum, VideoCreate,VideoUpdate, SearchCriteria, VideoBase
-from app.models import categorie, enfant_video
+from app.models.parent_video import parent_video
 from fastapi.responses import FileResponse
 from sqlalchemy.sql import select
 from sqlalchemy.engine import Connection
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, insert, update
 # from fastapi.responses import JSONResponse
 # from app.models.categorie_video import CategorieVideo
 
@@ -170,5 +170,96 @@ def get_like_status_route(video_id: str, enfant_id: str, db: Session = Depends(g
 #         for video in videos
 #     ]
 
+
+@router.post("/update-interest/{parent_id}/{video_id}/{interested}/{motif}")
+def update_interest(parent_id: str, video_id: str, interested: bool, motif: str = None, db: Session = Depends(get_db)):
+    # Récupérer le parent et la vidéo correspondants à partir de la base de données
+    parent = db.query(Parent).filter(Parent.id == parent_id).first()
+    video = db.query(Video).filter(Video.id == video_id).first()
     
-     
+    if not parent or not video:
+        raise HTTPException(status_code=404, detail="Parent or Video not found")
+    
+    try:
+        # Vérifier si le parent a déjà un enregistrement pour cette vidéo
+        existing_entry = db.query(parent_video).filter(
+            parent_video.c.parent_id == parent_id,
+            parent_video.c.video_id == video_id
+        ).first()
+        
+        if existing_entry:
+            if interested:
+                # Mettre à jour l'état d'intérêt et le motif
+                db.execute(
+                    update(parent_video)
+                    .where(parent_video.c.parent_id == parent_id)
+                    .where(parent_video.c.video_id == video_id)
+                    .values(interested=True, motifs=motif)
+                )
+            else:
+                # Mettre à jour l'état d'intérêt et supprimer le motif
+                db.execute(
+                    update(parent_video)
+                    .where(parent_video.c.parent_id == parent_id)
+                    .where(parent_video.c.video_id == video_id)
+                    .values(interested=False, motifs=None)
+                )
+        
+        else:
+            # Ajouter un nouvel enregistrement
+            db.execute(
+                insert(parent_video).values(
+                    parent_id=parent_id,
+                    video_id=video_id,
+                    interested=interested,
+                    motifs=motif if interested else None
+                )
+            )
+
+        db.commit()
+
+        # Récupérer le document dont la variable vient de changer
+        updated_entry = db.query(parent_video).filter(
+            parent_video.c.parent_id == parent_id,
+            parent_video.c.video_id == video_id
+        ).first()
+
+        response = {
+            "parent_id": updated_entry.parent_id,
+            "video_id": updated_entry.video_id,
+            "interested": updated_entry.interested,
+            "motifs": updated_entry.motifs
+        }
+
+        return response
+    
+    except Exception as e:
+        db.rollback()  # Annuler les changements en cas d'erreur
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+    
+
+@router.get("/get-all-motifs/")
+def get_all_motifs(db: Session = Depends(get_db)):
+    try:
+        # Requête pour récupérer le nom du parent, le titre de la vidéo, et le motif
+        query = (
+            db.query(Parent.nom.label("nom"), Video.titre.label("titre"), parent_video.c.motifs)
+            .join(parent_video, Parent.id == parent_video.c.parent_id)
+            .join(Video, Video.id == parent_video.c.video_id)
+            .filter(parent_video.c.motifs.isnot(None))  # Filtrer pour ne récupérer que les entrées avec des motifs
+            .all()
+        )
+
+        # Préparer la réponse
+        response = []
+        for result in query:
+            response.append({
+                "nom": result.nom,
+                "titre": result.titre,
+                "motif": result.motifs
+            })
+
+        return response
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

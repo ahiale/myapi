@@ -7,5 +7,5 @@ parent_video = Table(
     Column("parent_id", String, ForeignKey("parents.id"), primary_key=True),
     Column("video_id", String(255), ForeignKey("videos.id"), primary_key=True),
     Column("interested", Boolean),
-    Column("motifs", String)
+    Column("motifs", String, nullable=True)
 )
