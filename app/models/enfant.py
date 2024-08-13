@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, ARRAY, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
-from app.models.enfant_video import enfant_video  # Import de la table de liaison
+from ..models.enfant_video import enfant_video  # Import de la table de liaison
 
 class Enfant(Base):
     __tablename__ = 'enfants'

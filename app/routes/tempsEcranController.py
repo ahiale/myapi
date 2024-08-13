@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.tempsEcran import TempsEcran
-from app.models.enfant import Enfant
+from ..models.tempsEcran import TempsEcran
+from ..models.enfant import Enfant
 # from schemas.tempsEcranSchema import TempsEcranCreate, TempsEcranUpdate 
 from database import get_db
-from app.crud.tempsEcranService import get_tempsEcran, get_all_tempsEcrans, create_tempsEcran, update_tempsEcran, delete_tempsEcran, get_enfant_id_by_temps_ecran_id
-from app.crud.utils import generate_id
-from app.schemas.tempsEcranSchema import TempsEcranCreate,TempsEcranUpdate
+from ..crud.tempsEcranService import get_tempsEcran, get_all_tempsEcrans, create_tempsEcran, update_tempsEcran, delete_tempsEcran, get_enfant_id_by_temps_ecran_id
+from ..crud.utils import generate_id
+from ..schemas.tempsEcranSchema import TempsEcranCreate,TempsEcranUpdate
 
 
 router=APIRouter()

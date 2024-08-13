@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.categorie import Categorie
+from ..models.categorie import Categorie
 # from schemas.categorieSchema import CategorieCreate, CategorieUpdate 
 from database import get_db
-from app.crud.categorieService import get_categorie, get_all_categories, create_categorie, update_categorie, delete_categorie
-from app.schemas.categorieSchema import CategorieBase, CategorieCreate, CategorieUpdate
+from ..crud.categorieService import get_categorie, get_all_categories, create_categorie, update_categorie, delete_categorie
+from ..schemas.categorieSchema import CategorieBase, CategorieCreate, CategorieUpdate
 
 
 router=APIRouter()

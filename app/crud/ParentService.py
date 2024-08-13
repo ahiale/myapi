@@ -1,14 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
-from app.models.parent import Parent
-from app.schemas.parentSchema import ParentCreate, ParentUpdate
+from ..models.parent import Parent
+from ..schemas.parentSchema import ParentCreate, ParentUpdate
 from database import get_db
-from app.crud.utils import generate_id
+from ..crud.utils import generate_id
 import logging
 import bcrypt
-from app.schemas.parentSchema import LoginSchema
-from app.crud.utils import verify_password, create_access_token, get_hashed_password
+from ..schemas.parentSchema import LoginSchema
+from ..crud.utils import verify_password, create_access_token, get_hashed_password
 
 
 # def hash_password(password: str) -> str:

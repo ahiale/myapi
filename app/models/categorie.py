@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Table
 from database import Base, metadata
-# from app.models.categorie_video import Categorie_video
+# from ..models.categorie_video import Categorie_video
 from sqlalchemy.orm import relationship
-from app.models.categorie_video import categorie_video
+from ..models.categorie_video import categorie_video
 
 
 

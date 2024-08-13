@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
-from app.models.categorie import Categorie
-from app.schemas.categorieSchema import CategorieCreate, CategorieUpdate
+from ..models.categorie import Categorie
+from ..schemas.categorieSchema import CategorieCreate, CategorieUpdate
 from database import get_db
-from app.crud.utils import generate_id
+from ..crud.utils import generate_id
 import logging
 
 def retriveCategorie(categorie_id: str, db:Session=Depends(get_db)):

@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.crud.utils import create_access_token
+from ..crud.utils import create_access_token
 
 router=APIRouter()
 

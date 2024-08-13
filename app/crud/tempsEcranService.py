@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
-from app.models.tempsEcran import TempsEcran
-from app.models.enfant import Enfant
-from app.schemas.tempsEcranSchema import TempsEcranCreate, TempsEcranUpdate, TempsEcranBase 
+from ..models.tempsEcran import TempsEcran
+from ..models.enfant import Enfant
+from ..schemas.tempsEcranSchema import TempsEcranCreate, TempsEcranUpdate, TempsEcranBase 
 from database import get_db
-from app.crud.utils import generate_id
+from ..crud.utils import generate_id
 import logging
 
 

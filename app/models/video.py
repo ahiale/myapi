@@ -1,12 +1,12 @@
 
 from sqlalchemy import Column, String, Integer, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-from app.models.enumsVideos import Type_Source_Enum
+from ..models.enumsVideos import Type_Source_Enum
 from database import Base
-from app.models.enfant_video import enfant_video  
-from app.models.parent_video import parent_video
-from app.models.enums import Type_Video_Enum
-from app.models.categorie_video import categorie_video  
+from ..models.enfant_video import enfant_video  
+from ..models.parent_video import parent_video
+from ..models.enums import Type_Video_Enum
+from ..models.categorie_video import categorie_video  
 
 
 class Video(Base):

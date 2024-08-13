@@ -6,24 +6,24 @@ from fastapi import HTTPException, status,Depends,UploadFile,File
 from fastapi.responses import JSONResponse
 import requests # type: ignore
 # from moviepy.editor import VideoFileClip
-from app.models.enumsVideos import Type_Source_Enum
-from app.models.video import Video
-from app.models.categorie_video import categorie_video
+from ..models.enumsVideos import Type_Source_Enum
+from ..models.video import Video
+from ..models.categorie_video import categorie_video
 
-from app.models.admin import Admin
-from app.models.saison import Saison
-from app.models.enfant_video import enfant_video
-from app.models.enfant import Enfant
-from app.schemas.videoSchema import VideoCreate, VideoUpdate, VideoBase , LikeResponse
-from app.models.enums import Type_Video_Enum
+from ..models.admin import Admin
+from ..models.saison import Saison
+from ..models.enfant_video import enfant_video
+from ..models.enfant import Enfant
+from ..schemas.videoSchema import VideoCreate, VideoUpdate, VideoBase , LikeResponse
+from ..models.enums import Type_Video_Enum
 from database import get_db
-from app.crud.utils import generate_id
+from ..crud.utils import generate_id
 import logging
 import httpx
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-from app.constants.urls import SERVER_ADDRESS
+from ..constants.urls import SERVER_ADDRESS
 # import cv2
 
 load_dotenv()

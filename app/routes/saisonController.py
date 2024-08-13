@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.saison import Saison
+from ..models.saison import Saison
 # from schemas.saisonSchema import SaisonCreate, SaisonUpdate 
 from database import get_db
-from app.crud.saisonService import get_saison, get_all_saisons, create_saison, update_saison, delete_saison
-from app.schemas.saisonSchema import SaisonBase, SaisonCreate, SaisonUpdate
+from ..crud.saisonService import get_saison, get_all_saisons, create_saison, update_saison, delete_saison
+from ..schemas.saisonSchema import SaisonBase, SaisonCreate, SaisonUpdate
 
 
 router=APIRouter()

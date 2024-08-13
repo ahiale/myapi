@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.serie import Serie
+from ..models.serie import Serie
 # from schemas.serieSchema import SerieCreate, SerieUpdate 
 from database import get_db
-from app.crud.serieService import get_serie, get_all_series, create_serie, update_serie, delete_serie
-from app.schemas.serieSchema import  SerieCreate, SerieUpdate
+from ..crud.serieService import get_serie, get_all_series, create_serie, update_serie, delete_serie
+from ..schemas.serieSchema import  SerieCreate, SerieUpdate
 
 
 router=APIRouter()

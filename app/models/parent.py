@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime,String,Integer,Boolean, ForeignKey
 from database import Base
 from sqlalchemy.orm import relationship
-from app.models.parent_video import parent_video
+from ..models.parent_video import parent_video
 
 class Parent(Base):
     __tablename__ = 'parents'

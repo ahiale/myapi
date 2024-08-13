@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
-from app.models.saison import Saison
-from app.schemas.saisonSchema import SaisonCreate, SaisonUpdate
+from ..models.saison import Saison
+from ..schemas.saisonSchema import SaisonCreate, SaisonUpdate
 from database import get_db
-from app.crud.utils import generate_id
+from ..crud.utils import generate_id
 import logging
 
 

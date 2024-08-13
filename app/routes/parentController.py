@@ -2,15 +2,15 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.parent import Parent
+from ..models.parent import Parent
 # from schemas.parentSchema import ParentCreate, ParentUpdate 
 from database import SessionLocal, get_db
-from app.crud.parentService import get_all_parents, get_parent, create_parent, update_parent, delete_parent
-from app.crud.utils import generate_id
-from app.schemas.parentSchema import ParentCreate,ParentUpdate
-from app.crud.utils import create_access_token
-from app.crud.parentService import login
-from app.schemas.parentSchema import LoginSchema
+from ..crud.parentService import get_all_parents, get_parent, create_parent, update_parent, delete_parent
+from ..crud.utils import generate_id
+from ..schemas.parentSchema import ParentCreate,ParentUpdate
+from ..crud.utils import create_access_token
+from ..crud.parentService import login
+from ..schemas.parentSchema import LoginSchema
 
 
 router=APIRouter()

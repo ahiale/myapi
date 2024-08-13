@@ -2,15 +2,15 @@ import logging
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from fastapi import Form, HTTPException, status,Depends,APIRouter,Query, UploadFile, File
-from app.models.video import Video
-from app.models.parent import Parent
+from ..models.video import Video
+from ..models.parent import Parent
 from typing import List
 # from schemas.videoSchema import VideoCreate, VideoUpdate 
 from database import get_db
-from app.crud.videoService import get_like_status, get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file, retirer_like
-from app.crud.utils import generate_id
-from app.schemas.videoSchema import TypeSourceEnum, TypeVideoEnum, VideoCreate,VideoUpdate, SearchCriteria, VideoBase
-from app.models.parent_video import parent_video
+from ..crud.videoService import get_like_status, get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file, retirer_like
+from ..crud.utils import generate_id
+from ..schemas.videoSchema import TypeSourceEnum, TypeVideoEnum, VideoCreate,VideoUpdate, SearchCriteria, VideoBase
+from ..models.parent_video import parent_video
 from fastapi.responses import FileResponse
 from sqlalchemy.sql import select
 from sqlalchemy.engine import Connection

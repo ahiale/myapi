@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Table,Time
 from database import Base, metadata
-# from app.models.categorie_video import Categorie_video
+# from ..models.categorie_video import Categorie_video
 from sqlalchemy.orm import relationship
 
 class TempsEcran(Base):

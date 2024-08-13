@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.admin import Admin
+from ..models.admin import Admin
 from app.models.admin import Admin
 # from schemas.adminSchema import AdminCreate, AdminUpdate 
 from database import get_db
-from app.crud.adminService import get_admin, get_all_admins, create_admin, login, update_admin, delete_admin
-from app.crud.utils import generate_id
-from app.schemas.adminSchema import AdminBase, AdminCreate, AdminUpdate, LoginSchema
+from ..crud.adminService import get_admin, get_all_admins, create_admin, login, update_admin, delete_admin
+from ..crud.utils import generate_id
+from ..schemas.adminSchema import AdminBase, AdminCreate, AdminUpdate, LoginSchema
 
 
 router=APIRouter()

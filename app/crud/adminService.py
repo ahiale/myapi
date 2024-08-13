@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
-from app.crud.utils2 import create_access_token2, generate_id2, get_hashed_password2, verify_password2
-from app.models.admin import Admin
-from app.models.admin import Admin
-from app.schemas.adminSchema import AdminCreate, AdminUpdate, LoginSchema
+from ..crud.utils2 import create_access_token2, generate_id2, get_hashed_password2, verify_password2
+from ..models.admin import Admin
+from ..models.admin import Admin
+from ..schemas.adminSchema import AdminCreate, AdminUpdate, LoginSchema
 from database import get_db
-from app.crud.utils import  generate_id
+from ..crud.utils import  generate_id
 import logging
 import bcrypt
 

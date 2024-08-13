@@ -3,7 +3,6 @@ from fastapi.responses import RedirectResponse
 from app.routes import parentController, enfantController, adminController, tempsEcranController, videoController, saisonController, serieController, categorieController, categorieVideoController 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.crud import parentService, enfantService, tempsEcranService, categorieService, categorieVideoService, serieService, saisonService,adminService, videoService
 app = FastAPI()
 origins = [
     "http://localhost:3000",  

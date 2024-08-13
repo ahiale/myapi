@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.models.enfant import Enfant
-from app.models.parent import Parent
+from ..models.enfant import Enfant
+from ..models.parent import Parent
 # from schemas.enfantSchema import EnfantCreate, EnfantUpdate 
 from database import get_db
-from app.crud.enfantService import get_enfant, get_all_enfants, create_enfant, update_enfant, delete_enfant, get_tempsEcran_by_enfant_id
-from app.crud.utils import generate_id
-from app.schemas.enfantSchema import EnfantCreate,EnfantUpdate
+from ..crud.enfantService import get_enfant, get_all_enfants, create_enfant, update_enfant, delete_enfant, get_tempsEcran_by_enfant_id
+from ..crud.utils import generate_id
+from ..schemas.enfantSchema import EnfantCreate,EnfantUpdate
 
 
 router=APIRouter()

@@ -1,13 +1,13 @@
 from fastapi import HTTPException, status,Depends
 from sqlalchemy.orm import Session
-from app.crud.categorieService import get_categorie
-from app.crud.utils import generate_id
-from app.crud.videoService import get_video
-from app.models.categorie_video import categorie_video
-from app.models.categorie import Categorie
-from app.models.video import Video
+from ..crud.categorieService import get_categorie
+from ..crud.utils import generate_id
+from ..crud.videoService import get_video
+from ..models.categorie_video import categorie_video
+from ..models.categorie import Categorie
+from ..models.video import Video
 from database import get_db
-from app.schemas.categorieVideoSchema import CategorieVideoCreate
+from ..schemas.categorieVideoSchema import CategorieVideoCreate
 from sqlalchemy import select
 from fastapi.encoders import jsonable_encoder
 
