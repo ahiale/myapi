@@ -2,7 +2,7 @@
     "version": 2,
     "functions": {
       "app/**/*.py": {
-        "runtimes": "now-python@3.12.4"
+        "runtime": "now-python@3.12.4"
       }
     }
   }
