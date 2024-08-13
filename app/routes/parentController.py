@@ -2,8 +2,6 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
-from app.crud import parentService
-from app.models.enfant import Enfant
 from app.models.parent import Parent
 # from schemas.parentSchema import ParentCreate, ParentUpdate 
 from database import SessionLocal, get_db
@@ -13,8 +11,7 @@ from app.schemas.parentSchema import ParentCreate,ParentUpdate
 from app.crud.utils import create_access_token
 from app.crud.parentService import login
 from app.schemas.parentSchema import LoginSchema
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+
 
 router=APIRouter()
 
