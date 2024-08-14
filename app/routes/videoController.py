@@ -7,7 +7,7 @@ from ..models.parent import Parent
 from typing import List
 # from schemas.videoSchema import VideoCreate, VideoUpdate 
 from database import get_db
-from ..crud.videoService import get_like_status, get_video, get_all_videos, create_video, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file, retirer_like
+from ..crud.videoService import get_like_status, get_video, get_all_videos, create_video, remove_video_from_lists, update_video, delete_video, liker_video, consulter_video,readHistorique, upload_file, retirer_like
 from ..crud.utils import generate_id
 from ..schemas.videoSchema import TypeSourceEnum, TypeVideoEnum, VideoCreate,VideoUpdate, SearchCriteria, VideoBase
 from ..models.parent_video import parent_video
@@ -263,3 +263,7 @@ def get_all_motifs(db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+@router.delete("/video/remove-from-lists/{video_id}/{parent_id}")
+async def remove_video_from_lists_route(video_id: str, parent_id: str, db: Session = Depends(get_db)):
+    return remove_video_from_lists(db, video_id, parent_id)

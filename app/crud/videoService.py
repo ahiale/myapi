@@ -4,7 +4,9 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,UploadFile,File
 from fastapi.responses import JSONResponse
-import requests # type: ignore
+import requests
+
+from app.models.parent import Parent # type: ignore
 # from moviepy.editor import VideoFileClip
 from ..models.enumsVideos import Type_Source_Enum
 from ..models.video import Video
@@ -365,5 +367,26 @@ def get_like_status(db: Session, video_id: str, enfant_id: str):
     except Exception as e:
         logging.error(e)
         raise HTTPException(status_code=500, detail=str(e))   
-    
+
+
+def remove_video_from_lists(db: Session, video_id: str, parent_id: str):
+    try:
+        # Retirer la vidéo de la liste du parent
+        parent = db.query(Parent).filter(Parent.id == parent_id).first()
+        if not parent:
+            raise HTTPException(status_code=404, detail="Parent non trouvé")
+        parent.videos = [video for video in parent.videos if video.id != video_id]
+        db.add(parent)
+        
+        # Retirer la vidéo de la liste des enfants du parent
+        enfants = db.query(Enfant).filter(Enfant.parent_id == parent_id).all()
+        for enfant in enfants:
+            enfant.videos = [video for video in enfant.videos if video.id != video_id]
+            db.add(enfant)
+        
+        db.commit()
+        return {"message": "Vidéo retirée des listes"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Erreur lors de la mise à jour des listes")    
    
