@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
 from ..models.tempsEcran import TempsEcran
@@ -70,3 +71,21 @@ def delete_tempsEcran_controller(tempsEcran_id: str, db: Session = Depends(get_d
 @router.get("/{tempsEcran_id}/enfant_id")
 def get_enfant_id(tempsEcran_id: str, db: Session = Depends(get_db)):
     return get_enfant_id_by_temps_ecran_id(tempsEcran_id, db)
+
+
+@router.get("/check-screen-time/{enfant_id}")
+def check_screen_time(enfant_id: str, db: Session = Depends(get_db)):
+    # Récupérer le temps d'écran pour l'enfant
+    temps_ecran = db.query(TempsEcran).filter(TempsEcran.enfant_id == enfant_id).first()
+    
+    if not temps_ecran:
+        raise HTTPException(status_code=404, detail="Temps d'écran non trouvé pour cet enfant")
+    
+    # Heure actuelle
+    heure_actuelle = datetime.now().time()
+    
+    # Vérifier si l'heure actuelle dépasse l'heure de fin
+    if heure_actuelle > temps_ecran.heuresF:
+        return {"status": "expired", "message": "Le temps d'écran est écoulé"}
+    
+    return {"status": "ok", "message": "Le temps d'écran est toujours en cours"}
