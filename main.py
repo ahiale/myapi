@@ -1,3 +1,6 @@
+import sys
+sys.path = sorted(sys.path, key=lambda x: 'site-packages' in x)
+
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from app.routes import parentController, enfantController, adminController, tempsEcranController, videoController, saisonController, serieController, categorieController, categorieVideoController 
