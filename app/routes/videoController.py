@@ -243,7 +243,7 @@ def get_all_motifs(db: Session = Depends(get_db)):
     try:
         # Requête pour récupérer le nom du parent, le titre de la vidéo, et le motif
         query = (
-            db.query(Parent.nom.label("nom"), Video.titre.label("titre"), parent_video.c.motifs)
+            db.query(Parent.nom.label("nom"),Parent.id.label("parent_id"), Video.id.label("video_id"),Video.titre.label("titre"), parent_video.c.motifs)
             .join(parent_video, Parent.id == parent_video.c.parent_id)
             .join(Video, Video.id == parent_video.c.video_id)
             .filter(parent_video.c.motifs.isnot(None))  # Filtrer pour ne récupérer que les entrées avec des motifs
@@ -254,6 +254,8 @@ def get_all_motifs(db: Session = Depends(get_db)):
         response = []
         for result in query:
             response.append({
+                "parent_id":result.parent_id,
+                "video_id":result.video_id,
                 "nom": result.nom,
                 "titre": result.titre,
                 "motif": result.motifs
