@@ -1,10 +1,9 @@
-import os
 from sqlalchemy import create_engine,MetaData
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # URL de connexion à la base de données
-DB_URL = os.environ.get("variable","postgresql://postgres:root@localhost:5432/nunyatoonbd")
+DB_URL = "postgresql://nunyatoonbd_user:n70tHPS714TL8oMBFvuvVzzfTQ97GPag@dpg-cqvinetds78s739kbvpg-a.oregon-postgres.render.com/nunyatoonbd"
 
 # Création du moteur SQLAlchemy
 engine = create_engine(DB_URL)

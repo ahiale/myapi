@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
 from ..models.tempsEcran import TempsEcran
@@ -75,17 +76,34 @@ def get_enfant_id(tempsEcran_id: str, db: Session = Depends(get_db)):
 
 @router.get("/check-screen-time/{enfant_id}")
 def check_screen_time(enfant_id: str, db: Session = Depends(get_db)):
+    
+    french_to_weekday = {
+    "lundi": 0,
+    "mardi": 1,
+    "mercredi": 2,
+    "jeudi": 3,
+    "vendredi": 4,
+    "samedi": 5,
+    "dimanche": 6
+}
+   
     # Récupérer le temps d'écran pour l'enfant
     temps_ecran = db.query(TempsEcran).filter(TempsEcran.enfant_id == enfant_id).first()
     
     if not temps_ecran:
         raise HTTPException(status_code=404, detail="Temps d'écran non trouvé pour cet enfant")
     
+    jour_list=temps_ecran.joursA.strip('{}').split(',')
+    weekday_numbers = {french_to_weekday[day.lower()] for day in jour_list}
     # Heure actuelle
     heure_actuelle = datetime.now().time()
+    today = datetime.today()
     
-    # Vérifier si l'heure actuelle dépasse l'heure de fin
-    if heure_actuelle > temps_ecran.heuresF:
+    if today.weekday() not in weekday_numbers:
+        return {"status": "daysexpired", "message": "Vous n'etes pas autorises a vous connecter aujourdhui"}
+        
+    if heure_actuelle < temps_ecran.heuresD or heure_actuelle>temps_ecran.heuresF:
+        
         return {"status": "expired", "message": "Le temps d'écran est écoulé"}
     
     return {"status": "ok", "message": "Le temps d'écran est toujours en cours"}
