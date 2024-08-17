@@ -5,11 +5,11 @@ from fastapi import HTTPException, status,Depends,APIRouter
 from ..models.parent import Parent
 # from schemas.parentSchema import ParentCreate, ParentUpdate 
 from database import SessionLocal, get_db
-from ..crud.parentService import get_all_parents, get_parent, create_parent, update_parent, delete_parent
+from ..crud.ParentService import get_all_parents, get_parent, create_parent, update_parent, delete_parent
 from ..crud.utils import generate_id
 from ..schemas.parentSchema import ParentCreate,ParentUpdate
 from ..crud.utils import create_access_token
-from ..crud.parentService import login
+from ..crud.ParentService import login
 from ..schemas.parentSchema import LoginSchema
 
 

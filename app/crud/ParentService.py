@@ -11,12 +11,6 @@ from ..schemas.parentSchema import LoginSchema
 from ..crud.utils import verify_password, create_access_token, get_hashed_password
 
 
-# def hash_password(password: str) -> str:
-#     salt = bcrypt.gensalt()
-#     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-#     return hashed_password.decode('utf-8')
-
-
 def retriveParent(parent_id: str, db:Session=Depends(get_db)):
     return db.query(Parent).filter(Parent.id == parent_id).first()
     
