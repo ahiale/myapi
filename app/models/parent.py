@@ -17,7 +17,7 @@ class Parent(Base):
     codeParental = Column(String)
     nbre_profil = Column(Integer)
     historique_video = Column(String)
-    maxProfilEnfant=Column(Integer, default=3)
+    maxProfilEnfant=Column(Integer, default=5)
     date_inscription = Column(DateTime, default=lambda: datetime.now(timezone.utc)) 
     # #Relation de plusieurs a un avec enfant
     enfants= relationship("Enfant", back_populates="parent")

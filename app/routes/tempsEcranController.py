@@ -102,8 +102,8 @@ def check_screen_time(enfant_id: str, db: Session = Depends(get_db)):
     if today.weekday() not in weekday_numbers:
         return {"status": "daysexpired", "message": "Vous n'etes pas autorises a vous connecter aujourdhui"}
         
-    if heure_actuelle < temps_ecran.heuresD or heure_actuelle>temps_ecran.heuresF:
-        
+    # Vérifier si l'heure actuelle dépasse l'heure de fin
+    if heure_actuelle > temps_ecran.heuresF:
         return {"status": "expired", "message": "Le temps d'écran est écoulé"}
     
     return {"status": "ok", "message": "Le temps d'écran est toujours en cours"}
