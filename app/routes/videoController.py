@@ -19,12 +19,11 @@ from sqlalchemy import create_engine, desc, insert, update
 # from app.models.categorie_video import CategorieVideo
 
 video_folder = "media/videos/"
-
 router=APIRouter()
 
 @router.get("/allVideo")
-def readU(db: Session=Depends(get_db)):
-    videos=get_all_videos(db)
+def readU(parent_id:str|None=None, enfant_id:str|None=None, db: Session=Depends(get_db)):
+    videos=get_all_videos(parent_id, enfant_id, db)
     if not videos:
         raise HTTPException(status_code=404, detail="No video found")
     return videos
@@ -39,7 +38,6 @@ def read_video_controller(video_id: str, db: Session = Depends(get_db)):
         return video
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
 
 # POST /video/
 @router.post("/createVideo")
@@ -58,7 +56,6 @@ async def create_video_controller(titre:str= Form(...),description : str=Form(..
         return video,status.HTTP_201_CREATED
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 #PUT /video/{video_id}
@@ -102,8 +99,6 @@ def like_video(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
-
 @router.post("/{video_id}/{enfant_id}/consulter")
 def consulter_video_endpoint(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
     try:
@@ -142,7 +137,6 @@ async def readVideo(video_name: str):
     return FileResponse(path)
 
 
-    
 @router.get("/video/{video_id}/{enfant_id}/like_status")
 def get_like_status_route(video_id: str, enfant_id: str, db: Session = Depends(get_db)):
     try:

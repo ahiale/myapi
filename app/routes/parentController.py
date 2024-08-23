@@ -44,8 +44,6 @@ def create_parent_controller(parent: ParentCreate, db: Session = Depends(get_db)
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
 #PUT /parent/{parent_id}
 @router.put("/updateParent/{parent_id}")
 def update_parent_controller(parent_id: str, parent: ParentUpdate, db: Session = Depends(get_db)):
@@ -56,7 +54,6 @@ def update_parent_controller(parent_id: str, parent: ParentUpdate, db: Session =
         return parent,status.HTTP_200_OK
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 #DELETE /parent/{parent_id}
 @router.delete("/{parent_id}")

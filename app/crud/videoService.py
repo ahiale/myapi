@@ -6,6 +6,7 @@ from fastapi import HTTPException, status,Depends,UploadFile,File
 from fastapi.responses import JSONResponse
 import requests
 
+from app.models import parent_video
 from app.models.parent import Parent # type: ignore
 # from moviepy.editor import VideoFileClip
 from ..models.enumsVideos import Type_Source_Enum
@@ -129,11 +130,15 @@ def delete_video( video_id: str, db:Session=Depends(get_db)):
     return True
     
 
-def get_all_videos(db: Session = Depends(get_db)):
+def get_all_videos(parent_id:str|None=None, enfant_id:str|None=None, db: Session = Depends(get_db)):
     try:
-        logging.info("Fetching all videos from the database")
         videos = db.query(Video).all()
-        logging.info(f"Fetched {len(videos)} videos")
+        if parent_id is not None:
+            parentSignaled=db.query(parent_video.video_id).filter(parent_video.c.parent_id == parent_id & parent_video.c.interested==True).all()
+            videofiltred=[video for video in  videos if video.id not in parentSignaled ]
+            return videofiltred
+        logging.info("Fetching all videos from the database")
+    
         return videos
     except Exception as e:
         logging.error(f"Error fetching videos: {e}", exc_info=True)

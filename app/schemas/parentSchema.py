@@ -6,7 +6,7 @@ class ParentBase(BaseModel):
     nom: str
     age: int
     pays: str
-    contact: str = None
+    contact: str
     email: EmailStr
     codeParental: str
     
