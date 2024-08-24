@@ -1,6 +1,6 @@
 from cmath import e
 import os
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,UploadFile,File
 from fastapi.responses import JSONResponse
@@ -134,8 +134,20 @@ def get_all_videos(parent_id:str|None=None, enfant_id:str|None=None, db: Session
     try:
         videos = db.query(Video).all()
         if parent_id is not None:
-            parentSignaled=db.query(parent_video.video_id).filter(parent_video.c.parent_id == parent_id & parent_video.c.interested==True).all()
-            videofiltred=[video for video in  videos if video.id not in parentSignaled ]
+            query = f"""
+            SELECT video_id
+            FROM parent_video
+            WHERE parent_id = '{parent_id}'
+            AND interested = true
+            """
+              # Define the SQL statement using text()
+            stmt = text(query)
+                # Execute the query
+            res = db.execute(stmt)
+            video_ids = [i[0] for i in res.fetchall()]
+            logging.error(video_ids)
+            # parentSignaled=db.query(parent_video).filter(parent_video.c.parent_id == parent_id & parent_video.c.interested==True).all()
+            videofiltred=[video for video in  videos if video.id not in video_ids ]
             return videofiltred
         logging.info("Fetching all videos from the database")
     
@@ -143,7 +155,6 @@ def get_all_videos(parent_id:str|None=None, enfant_id:str|None=None, db: Session
     except Exception as e:
         logging.error(f"Error fetching videos: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
-
 
 def liker_video(enfant_id: str, video_id: str, db: Session):
     # Récupérer l'enfant et la vidéo correspondants à partir de la base de données
