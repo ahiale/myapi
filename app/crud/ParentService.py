@@ -61,6 +61,7 @@ def create_parent(parent: ParentCreate, db:Session=Depends(get_db)):
         motDePasse=hashed_password,
         pays=parent.pays,
         email=parent.email,
+        contact=parent.contact,
         codeParental=parent.codeParental,
         age=parent.age,
         

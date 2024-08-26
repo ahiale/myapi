@@ -2,6 +2,8 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends,APIRouter
+
+from app.models.enfant import Enfant
 from ..models.parent import Parent
 # from schemas.parentSchema import ParentCreate, ParentUpdate 
 from database import SessionLocal, get_db
@@ -114,4 +116,29 @@ def get_contact(parent_id: str, db: Session = Depends(get_db)):
         return {"contact": parent.contact}
     else:
         return {"contact": None}
+    
+@router.get("/enfants/by-parent-contact")
+def get_children_by_parent_contact(contact: str, db: Session = Depends(get_db)):
+    try:
+        # Query the parent using the provided contact number
+        parent = db.query(Parent).filter_by(contact=contact).one()
+
+        # Get the list of children associated with the parent
+        enfants = db.query(Enfant).filter_by(parent_id=parent.id).all()
+
+        # Prepare the response with child id and pseudo
+        response = [
+            {
+                "id": enfant.id,
+                "pseudo": enfant.pseudo
+            }
+            for enfant in enfants
+        ]
+
+        return response
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()
     

@@ -314,7 +314,8 @@ def readHistorique(enfant_id: str, db: Session = Depends(get_db)):
                         "description": video.description,
                         "couverture": video.couverture,
                         "titre": video.titre,
-                        "date": historique_obj['date']
+                        "date": historique_obj['date'],
+                        "categories": ", ".join([cat.titre for cat in video.categories])
                     }
             
         allhistorique = list(historique_dict.values())
