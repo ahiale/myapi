@@ -22,8 +22,8 @@ video_folder = "media/videos/"
 router=APIRouter()
 
 @router.get("/allVideo")
-def readU(parent_id:str|None=None, enfant_id:str|None=None, db: Session=Depends(get_db)):
-    videos=get_all_videos(parent_id, enfant_id, db)
+def readU(parent_id:str|None=None,db: Session=Depends(get_db)):
+    videos=get_all_videos(parent_id, db)
     if not videos:
         raise HTTPException(status_code=404, detail="No video found")
     return videos

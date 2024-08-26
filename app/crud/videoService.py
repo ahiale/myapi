@@ -130,7 +130,7 @@ def delete_video( video_id: str, db:Session=Depends(get_db)):
     return True
     
 
-def get_all_videos(parent_id:str|None=None, enfant_id:str|None=None, db: Session = Depends(get_db)):
+def get_all_videos(parent_id:str|None=None, db: Session = Depends(get_db)):
     try:
         videos = db.query(Video).all()
         if parent_id is not None:
