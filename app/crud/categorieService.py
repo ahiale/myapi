@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status,Depends
 from ..models.categorie import Categorie
@@ -55,11 +56,26 @@ def delete_categorie( categorie_id: str, db:Session=Depends(get_db)):
     db.commit()
     return True
     
-    
-def get_all_categories(db: Session = Depends(get_db)):
+def get_all_categories(parent_id:str|None=None,db: Session = Depends(get_db)):
     try:
         logging.info("Fetching all categories from the database")
         categories = db.query(Categorie).all()
+        if parent_id is not None:
+            query = f"""
+            SELECT video_id
+            FROM parent_video
+            WHERE parent_id = '{parent_id}'
+            AND interested = true
+            """
+              # Define the SQL statement using text()
+            stmt = text(query)
+                # Execute the query
+            res = db.execute(stmt)
+            videocategorie_ids = [i[0] for i in res.fetchall()]
+            logging.error(videocategorie_ids)
+            for categorie in categories:
+                tempVideos=categorie.videos
+                categorie.videos=[video for video in  tempVideos if video.id not in videocategorie_ids]
         logging.info(f"Fetched {len(categories)} categories")
         return categories
     except Exception as e:

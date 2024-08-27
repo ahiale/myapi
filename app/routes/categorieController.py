@@ -10,8 +10,8 @@ from ..schemas.categorieSchema import CategorieBase, CategorieCreate, CategorieU
 router=APIRouter()
 
 @router.get("/allCategories")
-def readP(db: Session=Depends(get_db)):
-    categories=get_all_categories(db)
+def readP(parent_id:str|None=None,db: Session=Depends(get_db)):
+    categories=get_all_categories(parent_id,db)
     if not categories:
         raise HTTPException(status_code=404, detail="No categorie found")
     return categories
